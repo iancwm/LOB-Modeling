@@ -1,6 +1,6 @@
 import math
-import matplotlib.pyplot as plt
 import numpy as np
+import plotly.graph_objects as go
 from scipy.optimize import minimize
 
 
@@ -104,12 +104,25 @@ class AlmgrenChriss2000:
 
         opt_sale = np.asarray(opt_sale)
         if plot:
-            plt.plot(inventory, color='blue', lw=1.6)
-            plt.title('Optimal Execution - Dynamic Programming')
-            plt.xlabel('Trading Step')
-            plt.ylabel('Number of Shares')
-            plt.grid(True)
-            plt.show()
+            fig = go.Figure()
+            fig.add_trace(
+                go.Scatter(
+                    x=list(range(len(inventory))),
+                    y=inventory,
+                    mode='lines',
+                    name='Inventory',
+                    line=dict(color='blue', width=2)
+                )
+            )
+            fig.update_layout(
+                title='Optimal Execution - Dynamic Programming',
+                xaxis_title='Trading Step',
+                yaxis_title='Number of Shares',
+                hovermode='x unified',
+                template='plotly_white',
+                height=600
+            )
+            fig.show()
 
         return value_func, opt_moves, inventory, opt_sale, expected_shortfall, variance_shortfall
 
@@ -146,12 +159,25 @@ class AlmgrenChriss2000:
         variance_shortfall = self.variance_IS(opt_sale)
 
         if plot:
-            plt.plot(inventory, color='blue', lw=1.6)
-            plt.title('Optimal Execution - Quadratic Programming')
-            plt.xlabel('Trading Step')
-            plt.ylabel('Number of Shares')
-            plt.grid(True)
-            plt.show()
+            fig = go.Figure()
+            fig.add_trace(
+                go.Scatter(
+                    x=list(range(len(inventory))),
+                    y=inventory,
+                    mode='lines',
+                    name='Inventory',
+                    line=dict(color='blue', width=2)
+                )
+            )
+            fig.update_layout(
+                title='Optimal Execution - Quadratic Programming',
+                xaxis_title='Trading Step',
+                yaxis_title='Number of Shares',
+                hovermode='x unified',
+                template='plotly_white',
+                height=600
+            )
+            fig.show()
 
         return opt_sale, inventory, expected_shortfall, variance_shortfall
 

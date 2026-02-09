@@ -7,8 +7,8 @@ import scipy.io as sio
 from sklearn.metrics import mean_squared_error
 from statsmodels.tsa.ar_model import AutoReg
 from pathlib import Path
-import matplotlib.pyplot as plt
-from matplotlib import cm
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import sys
 
 np.set_printoptions(threshold=sys.maxsize)
@@ -110,30 +110,129 @@ class DePrado2014:
     def data_vis(self):
         # 11 is number of percentiles to color - (11-1)/2=5 is the bands shown
         percentiles = np.linspace(0, 100, 11)
-        colormap = cm.Blues # type: ignore
         spread = np.zeros((int(self.lobster_data['t'][-1]), 11))
         for i in range(11):
             for time in range(int(self.lobster_data['t'][-1])):
                 spread[time, i] = np.percentile(self.lobster_data['spread'], percentiles[i])
 
-        fig, axs = plt.subplots(2, 2)
-        axs[0, 0].set_title('Mid - Micro')
-        axs[0, 0].plot(self.lobster_data['t'], self.lobster_data['midprice'] - self.lobster_data['microprice'], color='r')
-        axs[1, 0].set_title('Order Imbalance')
-        axs[1, 0].plot(self.lobster_data['t'], self.lobster_data['order_imbalance'])
-        axs[0, 1].set_title('Spread with IQR')
-        axs[0, 1].plot(np.arange(0, int(self.lobster_data['t'][-1]), 1), spread[:, 5], color='k')
+        fig = make_subplots(
+            rows=2, cols=2,
+            subplot_titles=('Mid - Micro', 'Order Imbalance',
+                           'Spread with IQR', 'Cumulative Buy & Sell MOs'),
+            specs=[[{'type': 'scatter'}, {'type': 'scatter'}],
+                   [{'type': 'scatter'}, {'type': 'scatter'}]]
+        )
+        
+        # Plot 1: Mid - Micro
+        fig.add_trace(
+            go.Scatter(
+                x=self.lobster_data['t'],
+                y=self.lobster_data['midprice'] - self.lobster_data['microprice'],
+                mode='lines',
+                name='Mid - Micro',
+                line=dict(color='red'),
+                showlegend=False
+            ),
+            row=1, col=1
+        )
+        
+        # Plot 2: Order Imbalance
+        fig.add_trace(
+            go.Scatter(
+                x=self.lobster_data['t'],
+                y=self.lobster_data['order_imbalance'],
+                mode='lines',
+                name='Order Imbalance',
+                line=dict(color='blue'),
+                showlegend=False
+            ),
+            row=1, col=2
+        )
+        
+        # Plot 3: Spread with IQR
+        fig.add_trace(
+            go.Scatter(
+                x=np.arange(0, int(self.lobster_data['t'][-1]), 1),
+                y=spread[:, 5],
+                mode='lines',
+                name='Median Spread',
+                line=dict(color='black'),
+                showlegend=False
+            ),
+            row=2, col=1
+        )
+        
+        # Add confidence bands for spread
         for i in range(5):
-            axs[0, 1].fill_between(np.arange(0, int(self.lobster_data['t'][-1]), 1), spread[:, i], spread[:, -(i + 1)], color=colormap(i / 5))
-
+            fig.add_trace(
+                go.Scatter(
+                    x=np.arange(0, int(self.lobster_data['t'][-1]), 1),
+                    y=spread[:, i],
+                    fill=None,
+                    mode='lines',
+                    line_color='rgba(0,0,0,0)',
+                    showlegend=False,
+                    hoverinfo='skip'
+                ),
+                row=2, col=1
+            )
+            fig.add_trace(
+                go.Scatter(
+                    x=np.arange(0, int(self.lobster_data['t'][-1]), 1),
+                    y=spread[:, -(i + 1)],
+                    fill='tonexty',
+                    mode='lines',
+                    line_color='rgba(0,0,0,0)',
+                    fillcolor=f'rgba(0, 50, 200, {0.1 + i * 0.05})',
+                    name=f'Band {i+1}',
+                    showlegend=False,
+                    hoverinfo='skip'
+                ),
+                row=2, col=1
+            )
+        
+        # Plot 4: Cumulative Buy & Sell MOs
         buy_orders = self.lobster_data['market_order'][:, 7].clip(-1, 0)
         sell_orders = self.lobster_data['market_order'][:, 7].clip(0, 1)
-        axs[1, 1].set_title('Cumulative Buy & Sell MOs')
-        axs[1, 1].plot(np.arange(len(buy_orders)), np.cumsum(buy_orders), color='g')
-        axs[1, 1].plot(np.arange(len(sell_orders)), np.cumsum(sell_orders))
-        axs[1, 1].legend(loc="upper right")
-        fig.tight_layout()
-        plt.show()
+        
+        fig.add_trace(
+            go.Scatter(
+                x=np.arange(len(buy_orders)),
+                y=np.cumsum(buy_orders),
+                mode='lines',
+                name='Cumulative Buy MOs',
+                line=dict(color='green'),
+                showlegend=False
+            ),
+            row=2, col=2
+        )
+        
+        fig.add_trace(
+            go.Scatter(
+                x=np.arange(len(sell_orders)),
+                y=np.cumsum(sell_orders),
+                mode='lines',
+                name='Cumulative Sell MOs',
+                line=dict(color='blue'),
+                showlegend=False
+            ),
+            row=2, col=2
+        )
+        
+        fig.update_xaxes(title_text='Time', row=1, col=1)
+        fig.update_yaxes(title_text='Price Difference', row=1, col=1)
+        
+        fig.update_xaxes(title_text='Time', row=1, col=2)
+        fig.update_yaxes(title_text='Order Imbalance', row=1, col=2)
+        
+        fig.update_xaxes(title_text='Time', row=2, col=1)
+        fig.update_yaxes(title_text='Spread', row=2, col=1)
+        
+        fig.update_xaxes(title_text='Time', row=2, col=2)
+        fig.update_yaxes(title_text='Cumulative Volume', row=2, col=2)
+        
+        fig.update_layout(height=800, hovermode='x unified', template='plotly_white')
+        fig.show()
 
     def AR_order_imbalance(self, plot_regress):
         # separating buy & sell MO data
@@ -148,12 +247,31 @@ class DePrado2014:
         MO_sell_vol[:, 1] = np.where(MO_sell_vol[:, 2] > 0, 0,
                                      MO_sell_vol[:, 1])
         MO_sell_vol = MO_sell_vol[:, 0:2]
-        plt.title('Market Order Buy Volumes Against Time')
-        plt.xlabel('Time Since Midnight (Hours)')
-        plt.ylabel('Volume')
-        plt.scatter(MO_buy_vol[:, 0], MO_buy_vol[:, 1],
-                    c=np.random.rand(len(MO_buy_vol)))
-        plt.show()
+        
+        fig = go.Figure()
+        fig.add_trace(
+            go.Scatter(
+                x=MO_buy_vol[:, 0],
+                y=MO_buy_vol[:, 1],
+                mode='markers',
+                name='Market Order Buy Volumes',
+                marker=dict(
+                    color=np.random.rand(len(MO_buy_vol)),
+                    colorscale='Viridis',
+                    size=6
+                )
+            )
+        )
+        fig.update_layout(
+            title='Market Order Buy Volumes Against Time',
+            xaxis_title='Time Since Midnight (Hours)',
+            yaxis_title='Volume',
+            hovermode='closest',
+            template='plotly_white',
+            height=600
+        )
+        fig.show()
+        
         # Regressing Bid Volume - might change this to something more autocorrelated
         train = self.lobster_data['bidvol'][
                 0:int(len(self.lobster_data['bidvol'][:, 0]) / 3), 0]
@@ -180,9 +298,34 @@ class DePrado2014:
         rmse = math.sqrt(mean_squared_error(test, pred))
         print(f'RMSE: {rmse}')
         if plot_regress:
-            plt.plot(test)
-            plt.plot(pred, color='blue')
-            plt.show()
+            fig = go.Figure()
+            fig.add_trace(
+                go.Scatter(
+                    x=list(range(len(test))),
+                    y=test,
+                    mode='lines',
+                    name='Actual',
+                    line=dict(color='blue')
+                )
+            )
+            fig.add_trace(
+                go.Scatter(
+                    x=list(range(len(pred))),
+                    y=pred,
+                    mode='lines',
+                    name='Predicted',
+                    line=dict(color='orange')
+                )
+            )
+            fig.update_layout(
+                title='AR Order Imbalance Prediction',
+                xaxis_title='Time',
+                yaxis_title='Bid Volume',
+                hovermode='x unified',
+                template='plotly_white',
+                height=600
+            )
+            fig.show()
 
     def init_PIN(self):
         # probability of informed order conditional on sell
@@ -251,13 +394,34 @@ class DePrado2014:
                 v_i = [v_i[-1]]
                 P_i = [P_i[-1]]
 
-        plt.title('Buy & Sell Volumes using BVC')
-        plt.xlabel('Volume Bucket')
-        plt.ylabel('Volume')
-        plt.scatter(np.arange(len(total_volume_list)), buy_volume_buckets, label='Buy Volume')
-        plt.scatter(np.arange(len(total_volume_list)), sell_volume_buckets, label='Sell Volume', color='black')
-        plt.legend()
-        plt.show()
+        fig = go.Figure()
+        fig.add_trace(
+            go.Scatter(
+                x=np.arange(len(total_volume_list)),
+                y=buy_volume_buckets,
+                mode='markers',
+                name='Buy Volume',
+                marker=dict(color='blue', size=6)
+            )
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=np.arange(len(total_volume_list)),
+                y=sell_volume_buckets,
+                mode='markers',
+                name='Sell Volume',
+                marker=dict(color='black', size=6)
+            )
+        )
+        fig.update_layout(
+            title='Buy & Sell Volumes using BVC',
+            xaxis_title='Volume Bucket',
+            yaxis_title='Volume',
+            hovermode='closest',
+            template='plotly_white',
+            height=600
+        )
+        fig.show()
         return buy_volume_buckets, sell_volume_buckets
 
     def VPIN(self, buy_buckets, sell_buckets):
@@ -271,9 +435,24 @@ class DePrado2014:
         cumulative_volume = np.cumsum([buy_buckets[i] + sell_buckets[i] for i in range(len(buy_buckets))])
         weighted_vol = np.array([i * cumulative_volume[i] for i in range(len(cumulative_volume))])
         VPIN = cumulative_oi[1:] / weighted_vol[1:]
-        plt.plot(np.arange(len(VPIN)), VPIN, color='red')
-        plt.xlabel('Volume Bucket')
-        plt.ylabel('VPIN')
-        plt.title('Evolution of VPIN over Day')
-        plt.show()
+        
+        fig = go.Figure()
+        fig.add_trace(
+            go.Scatter(
+                x=np.arange(len(VPIN)),
+                y=VPIN,
+                mode='lines',
+                name='VPIN',
+                line=dict(color='red', width=2)
+            )
+        )
+        fig.update_layout(
+            title='Evolution of VPIN over Day',
+            xaxis_title='Volume Bucket',
+            yaxis_title='VPIN',
+            hovermode='x unified',
+            template='plotly_white',
+            height=600
+        )
+        fig.show()
         return VPIN

@@ -1,6 +1,6 @@
 import math
-import matplotlib.pyplot as plt
 import numpy as np
+import plotly.graph_objects as go
 
 
 class KyleModel:
@@ -69,10 +69,8 @@ class KyleModel:
         LAMBDA[self.N] = math.sqrt(SIGMA[self.N]) / (self.SIGMA * math.sqrt(2 * dT))
         price_changes[self.N] = LAMBDA[self.N] * noise_orders[self.N]
         
-        if plot:
-            plt.ion()
-            fig = plt.figure() # noqa: F841
-            plt.axis([0, 1000, 0, 1])
+        # Initialization for tracking iterations if needed
+        # (plotly visualization happens at the end)
             
         iter_count = 0
 
@@ -131,9 +129,7 @@ class KyleModel:
                 SIGMA[self.N] = 1e-8
             iter_count += 1
 
-        if plot:
-            plt.clf()
-        
+        # Create interactive visualization if plot=True
         ALPHA[0] = (1 - (2 * BETA[0] * LAMBDA[0])) / (dT * ((2 * LAMBDA[0]) * (1 - (BETA[0] * LAMBDA[0]))))
 
         # functions for noise trader order & uninformed order sizes, price change, and future profit
@@ -143,11 +139,37 @@ class KyleModel:
             price_changes[i + 1] = LAMBDA[i + 1] * (informed_orders[i] + noise_orders[i])
 
         if plot:
-            plt.plot(np.arange(self.N + 1), np.cumsum(informed_orders), label='Informed Orders')
-            plt.plot(np.arange(self.N + 1), np.cumsum(noise_orders), label='Noise Orders')
-            plt.xlabel('Time')
-            plt.ylabel('Order Size')
-            plt.title('Order Sizes of Market Participants')
-            plt.legend()
-            plt.show()
+            fig = go.Figure()
+            
+            # Add traces for informed and noise orders
+            fig.add_trace(
+                go.Scatter(
+                    x=np.arange(self.N + 1),
+                    y=np.cumsum(informed_orders),
+                    mode='lines',
+                    name='Informed Orders',
+                    line=dict(color='blue', width=2)
+                )
+            )
+            
+            fig.add_trace(
+                go.Scatter(
+                    x=np.arange(self.N + 1),
+                    y=np.cumsum(noise_orders),
+                    mode='lines',
+                    name='Noise Orders',
+                    line=dict(color='orange', width=2)
+                )
+            )
+            
+            fig.update_layout(
+                title='Order Sizes of Market Participants',
+                xaxis_title='Time',
+                yaxis_title='Order Size',
+                hovermode='x unified',
+                template='plotly_white',
+                height=600
+            )
+            
+            fig.show()
 

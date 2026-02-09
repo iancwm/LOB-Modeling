@@ -1,6 +1,6 @@
 import random
-import matplotlib.pyplot as plt
 import numpy as np
+import plotly.graph_objects as go
 
 
 class GlostenAndMilgromSimplest:
@@ -48,10 +48,35 @@ class GlostenAndMilgromSimplest:
 
     def plot(self):
         # prices vs trades/time
-        plt.plot(np.arange(self.N), self.bid, label='bid price')
-        plt.plot(np.arange(self.N), self.ask, label='ask price')
-        plt.xlabel('trades/time')
-        plt.ylabel('Price')
-        plt.title('Simplified Glosten-Milgrom')
-        plt.legend()
-        plt.show()
+        fig = go.Figure()
+        
+        fig.add_trace(
+            go.Scatter(
+                x=np.arange(self.N),
+                y=self.bid,
+                mode='lines',
+                name='Bid Price',
+                line=dict(color='blue', width=2)
+            )
+        )
+        
+        fig.add_trace(
+            go.Scatter(
+                x=np.arange(self.N),
+                y=self.ask,
+                mode='lines',
+                name='Ask Price',
+                line=dict(color='red', width=2)
+            )
+        )
+        
+        fig.update_layout(
+            title='Simplified Glosten-Milgrom',
+            xaxis_title='Trades/Time',
+            yaxis_title='Price',
+            hovermode='x unified',
+            template='plotly_white',
+            height=600
+        )
+        
+        fig.show()
