@@ -173,3 +173,13 @@ class KyleModel:
             
             fig.show()
 
+        return {
+            'ALPHA': ALPHA,
+            'BETA': BETA,
+            'DELTA': DELTA,
+            'LAMBDA': LAMBDA,
+            'SIGMA': SIGMA,
+            'price_changes': price_changes,
+            'informed_orders': informed_orders,
+            'noise_orders': noise_orders
+        }
