@@ -1,26 +1,75 @@
-This semester/year, the repo will serve to compile a collection of fundamental market making models, as well as explorations of my own. I apologize for the docs and structure of this - I just wanted to make functional & readable model code available for people to use - most of the original papers do not include code and this helps for reproducability/verifying results. 
+# LOB Modeling
 
-Data to play with can be found in the example data - matlab files of LOB data for AMZN and EBAY or, in the trades directory/folder as csv files - this is just the sample ITCH data from Tick Data (https://www.tickdata.com/). 
+This repository compiles a collection of fundamental market making models and explorations.
 
-**glosten-milgrom-simple.py**
-This is the simplest version - given some order book at each time, it computes the expected bid and ask. Here we can see the math & intuition blend nicely - spreads begin to converge after n trades as they gain more info on the "true" price
-![ScreenShot](https://drive.google.com/uc?export=view&id=18s2g7-ETOgQ_dNAwFM2qGXg58gop8TzW)
+## Structure
 
-**Kyle Model.py**
-This features the single period and multiperiod versions of the discretized Kyle model. It computes params for determining agents order flow at each time period as well as the informed trader expected profit (MM prices fairly). The model is very interesting, but actually implementing the model requires guessing SIGMA_N (future vol at end of trading) and recursively solving for initial vol and the other params. The original paper did not provide a way to get the convergence of SIGMA- True_Sigma at t=0, so here's a I guess toy version as I'm not sure best way to converge
-![ScreenShot](https://drive.google.com/uc?export=view&id=1BVKIPqujWb2vA3L-4r8hETevFOpv2omM)
+*   `src/lob_modeling/models/`: Contains the model implementations.
+    *   `kyle.py`: Kyle Model (1985)
+    *   `almgren_chriss.py`: Almgren-Chriss (2000) optimal execution
+    *   `glosten_milgrom.py`: Glosten-Milgrom (1985)
+    *   `de_prado.py`: De Prado et al. (2012)
+    *   `criscuolo_waehlbroeck.py`: Criscuolo & Waehlbroeck (2014)
+    *   `asset_option.py`: Asset or Nothing Option pricing
+*   `data/`: Sample data files.
+*   `tests/`: Unit tests.
 
-Here is a graph of the order sizes of the participants with V_0=5, SIGMA_T = 0.2, MAX_ITER = 100, SIGMA_noise = 2. We see after several demonstrations that order size of noise and informed are relatively inversely correlated.
-![ScreenShot](https://drive.google.com/uc?export=view&id=1Uriq0TB-LOCUhvgGEJJZJz8RLyUYmY5v)
+## Installation
 
-**optimal_execution.py**
-This features a collection of models deviating from the seminal work of Almgren & Chriss in 2000. For now, it has optimal execution from the very basic version with linear impact costs as well as the one with stochastic optimal control & dynamic programming. Here is a graph of optimal execution from the stochastic approach with the following parameters: ALPHA = 1, ETA = 0.05, GAMMA = 0.5, BETA = 1, LAMBDA = 0.0003, SIGMA = 0.3, EPSILON = 0.0625, N = 50, T = 1, X = 100:
-![ScreenShot](https://drive.google.com/uc?export=view&id=1bO2KBGDsW7c738PQ4fOyMp7GFvv6fYqy)
+1.  Create a virtual environment:
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+2.  Install dependencies:
+    ```bash
+    make install
+    ```
+    Or manually:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-**Stochastic-Vol-Optimal-Exec.py**
-This attempts to replicate the results of Criscuolo & Waehlbroek (2014) when uncovering the effects of stochastic volatility (a deviant of the Heston with temporal averaging) on participation rate schedules for institutions. The code is buggy/doesn't work at the moment - the minimization looks atrocious - the paper simplifies results for only n=4 - not enough/realistic as trades can happen much more frequently. Additionally they use some "patented/private" simulated annealing software that supposedly makes this code work - I don't want to point fingers, but the result isn't practical even if it is solvable using some fancy numerical technique because of runtime issues. 
+## Usage
 
-**dePrado.py**
-Features models, calculations, and data feed for exploring/verifying results of Easley, de Prado, O'Hara (2012). I also wanted to include basic microstructure details, data that is cleaned, graphs, etc.
-![ScreenShot](https://drive.google.com/uc?export=view&id=1Nbj__JszYP94MPA8lPjzhQznQtOi2ZPp)
+You can run the models using the `Makefile` commands:
 
+```bash
+make run-kyle
+make run-almgren
+make run-glosten
+make run-criscuolo
+```
+
+Or by importing them in your Python scripts:
+
+```python
+from src.lob_modeling.models.kyle import KyleModel
+
+model = KyleModel()
+model.one_period_price()
+```
+
+## Models
+
+### Kyle Model
+Features single period and multiperiod versions of the discretized Kyle model. Computes params for determining agents order flow at each time period.
+
+### Almgren-Chriss
+Optimal execution models deviating from the seminal work of Almgren & Chriss (2000). Includes optimal execution with linear impact costs and stochastic optimal control.
+
+### Glosten-Milgrom
+Simplest version - given some order book at each time, computes the expected bid and ask.
+
+### De Prado
+Models, calculations, and data feed for exploring/verifying results of Easley, de Prado, O'Hara (2012).
+
+### Criscuolo & Waehlbroeck
+Attempts to replicate the results of Criscuolo & Waehlbroek (2014) on the effects of stochastic volatility on participation rate schedules.
+
+## Testing
+
+Run unit tests with:
+```bash
+make test
+```
