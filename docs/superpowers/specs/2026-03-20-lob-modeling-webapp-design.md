@@ -119,10 +119,256 @@ LOB-Modeling/
 | **Real-time** | WebSocket (via `websockets`) | Bidirectional streaming for slider interactions |
 | **API** | REST + WebSocket | REST for discovery/config, WS for live updates |
 | **Container** | Docker (multi-stage) | Consistent local and cloud deployment |
+| **Package Management** | uv | Fast, reliable Python package management and virtual environments |
+| **Build Automation** | Justfile | Modern, cross-platform command runner (Make alternative) |
 | **Testing** | pytest (backend), Jest + React Testing Library (frontend) | Full test coverage |
 | **CI/CD** | GitHub Actions | Automated testing, building, deployment |
 
-### 2.3 Deployment Model
+### 2.3 Build Automation (Justfile)
+
+**Justfile** provides a modern, cross-platform command runner for common development tasks:
+
+```justfile
+# Justfile for LOB Modeling Webapp
+
+# Default target
+default:
+    @just --list
+
+# ============================================
+# Development
+# ============================================
+
+# Start local development environment
+dev:
+    @echo "Starting development environment..."
+    docker-compose up --build
+
+# Start backend only (for backend development)
+dev-backend:
+    @echo "Starting backend development server..."
+    uv run uvicorn src.lob_modeling.webapp.main:app --reload --host 0.0.0.0 --port 8000
+
+# Start frontend only (for frontend development)
+dev-frontend:
+    @echo "Starting frontend development server..."
+    cd frontend && npm run start
+
+# Run linters
+lint:
+    @echo "Running linters..."
+    uv run flake8 src/lob_modeling/webapp --max-line-length=100
+    uv run black src/lob_modeling/webapp --check
+    uv run mypy src/lob_modeling/webapp
+    cd frontend && npm run lint
+
+# Format code
+format:
+    @echo "Formatting code..."
+    uv run black src/lob_modeling/webapp
+    uv run isort src/lob_modeling/webapp
+    cd frontend && npm run format
+
+# ============================================
+# Testing
+# ============================================
+
+# Run all tests
+test:
+    @echo "Running tests..."
+    uv run pytest tests/webapp/ --cov=src/lob_modeling/webapp --cov-report=term-missing
+    cd frontend && npm test -- --coverage
+
+# Run backend tests only
+test-backend:
+    @echo "Running backend tests..."
+    uv run pytest tests/webapp/ -v
+
+# Run frontend tests only
+test-frontend:
+    @echo "Running frontend tests..."
+    cd frontend && npm test
+
+# Run tests with coverage
+coverage:
+    @echo "Running tests with coverage..."
+    uv run pytest tests/webapp/ --cov=src/lob_modeling/webapp --cov-report=html
+    @echo "Coverage report: htmlcov/index.html"
+
+# ============================================
+# Build & Deploy
+# ============================================
+
+# Build Docker images
+build:
+    @echo "Building Docker images..."
+    docker-compose build
+
+# Build production Docker image
+build-prod:
+    @echo "Building production image..."
+    docker build -t lob-modeling-webapp:latest .
+
+# Run production Docker container
+run-prod:
+    @echo "Running production container..."
+    docker run -p 3000:80 -p 8000:8000 lob-modeling-webapp:latest
+
+# Deploy to cloud (placeholder for cloud-specific commands)
+deploy:
+    @echo "Deploying to cloud..."
+    # Add cloud-specific deployment commands here
+    # Example: docker push, kubectl apply, etc.
+
+# ============================================
+# Utilities
+# ============================================
+
+# Clean build artifacts
+clean:
+    @echo "Cleaning build artifacts..."
+    find . -type d -name __pycache__ -exec rm -rf {} +
+    find . -type d -name node_modules -exec rm -rf {} +
+    find . -type d -name .pytest_cache -exec rm -rf {} +
+    find . -type d -name .mypy_cache -exec rm -rf {} +
+    find . -type d -name htmlcov -exec rm -rf {} +
+    find . -type f -name "*.pyc" -delete
+    cd frontend && npm run clean || true
+
+# Install dependencies
+install:
+    @echo "Installing dependencies..."
+    uv sync
+    cd frontend && npm ci
+
+# Update dependencies
+update:
+    @echo "Updating dependencies..."
+    uv lock --upgrade
+    cd frontend && npm update
+
+# Generate API types from OpenAPI spec
+generate-types:
+    @echo "Generating TypeScript types from OpenAPI spec..."
+    uv run openapi-python-client generate --path http://localhost:8000/openapi.json --output frontend/src/types/api.ts
+
+# Health check
+health:
+    @echo "Checking service health..."
+    curl -f http://localhost:8000/health && echo "Backend: OK" || echo "Backend: FAIL"
+    curl -f http://localhost:3000/health && echo "Frontend: OK" || echo "Frontend: FAIL"
+
+# Show help
+help:
+    @just --list
+```
+
+**Usage Examples:**
+```bash
+# List available commands
+just
+
+# Start development environment
+just dev
+
+# Run tests
+just test
+
+# Build Docker images
+just build
+
+# Clean and reinstall
+just clean && just install
+```
+
+### 2.4 Python Package Management (uv)
+
+**uv** is used for fast, reliable Python package management:
+
+```bash
+# Initialize project (if not already done)
+uv init
+
+# Create virtual environment
+uv venv
+
+# Activate virtual environment
+source .venv/bin/activate  # Linux/macOS
+.venv\Scripts\activate     # Windows
+
+# Install dependencies
+uv sync
+
+# Install in development mode with extras
+uv sync --extra dev
+
+# Add a new dependency
+uv add fastapi websockets uvicorn
+
+# Add a dev dependency
+uv add --dev pytest pytest-cov black flake8 mypy
+
+# Run a command in the project environment
+uv run pytest tests/
+
+# Build package for distribution
+uv build
+
+# Publish to PyPI
+uv publish
+```
+
+**pyproject.toml Configuration:**
+```toml
+[project]
+name = "lob-modeling-webapp"
+version = "0.1.0"
+description = "Interactive webapp for visualizing market making algorithms"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
+    "websockets>=12.0",
+    "numpy>=1.24.0",
+    "pandas>=2.0.0",
+    "scipy>=1.10.0",
+    "matplotlib>=3.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.23.0",
+    "black>=24.0.0",
+    "flake8>=7.0.0",
+    "mypy>=1.8.0",
+    "httpx>=0.26.0",  # For async test client
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/lob_modeling"]
+
+[tool.black]
+line-length = 100
+target-version = ['py310']
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_return_any = true
+warn_unused_ignores = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests/webapp"]
+asyncio_mode = "auto"
+```
+
+### 2.5 Deployment Model
 
 **Hybrid Deployment Strategy:**
 
@@ -1525,34 +1771,82 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  PYTHON_VERSION: '3.10'
+  NODE_VERSION: '18'
+
 jobs:
-  test-backend:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v2
+        with:
+          version: "latest"
+      
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: ${{ env.PYTHON_VERSION }}
+      
       - name: Install dependencies
-        run: pip install -r requirements.txt -r requirements-dev.txt
+        run: uv sync --extra dev
+      
+      - name: Run linters
+        run: |
+          uv run flake8 src/lob_modeling/webapp --max-line-length=100
+          uv run black src/lob_modeling/webapp --check
+          uv run mypy src/lob_modeling/webapp
+
+  test-backend:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v2
+        with:
+          version: "latest"
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install dependencies
+        run: uv sync --extra dev
+      
       - name: Run tests
-        run: pytest tests/ --cov=src/lob_modeling --cov-report=xml
+        run: uv run pytest tests/webapp/ --cov=src/lob_modeling/webapp --cov-report=xml
+      
       - name: Upload coverage
         uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.xml
+          flags: backend
 
   test-frontend:
     runs-on: ubuntu-latest
+    needs: lint
     steps:
       - uses: actions/checkout@v4
+      
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
       - name: Install dependencies
         run: cd frontend && npm ci
+      
       - name: Run tests
         run: cd frontend && npm test -- --coverage
+      
       - name: Build
         run: cd frontend && npm run build
 
@@ -1561,13 +1855,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
       - name: Build Docker image
         run: docker build -t lob-modeling-webapp:${{ github.sha }} .
-      - name: Push to registry (on main only)
+      
+      - name: Login to Container Registry
+        if: github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Push to GitHub Container Registry
         if: github.ref == 'refs/heads/main'
         run: |
-          # Push to Docker Hub, GHCR, or cloud registry
-          ...
+          docker tag lob-modeling-webapp:${{ github.sha }} ghcr.io/${{ github.repository }}:latest
+          docker push ghcr.io/${{ github.repository }}:latest
 
   deploy:
     needs: build-docker
@@ -1576,12 +1883,47 @@ jobs:
     steps:
       - name: Deploy to cloud
         # Deployment steps for AWS/GCP/Heroku
+        # Example: Deploy to Cloud Run, ECS, or Heroku Container Registry
         ...
+```
+
+### 10.2 Using Just in CI/CD
+
+Alternatively, the CI/CD pipeline can use Just commands for consistency:
+
+```yaml
+# Simplified CI/CD using Just
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v2
+      
+      - name: Install Just
+        uses: taiki-e/install-action@v2
+        with:
+          tool: just
+      
+      - name: Install dependencies
+        run: just install
+      
+      - name: Run linters
+        run: just lint
+      
+      - name: Run tests
+        run: just test
+      
+      - name: Build Docker
+        run: just build
 ```
 
 ---
 
-## 11. Development Roadmap
+## 12. Development Roadmap
 
 ### Phase 1: Foundation (Weeks 1-3)
 
@@ -1591,6 +1933,7 @@ jobs:
 - [ ] Create basic React shell with module selector
 - [ ] Implement WebSocket communication
 - [ ] Docker Compose for local development
+- [ ] Set up Justfile and uv for build automation
 
 ### Phase 2: Core Features (Weeks 4-6)
 
@@ -1619,7 +1962,7 @@ jobs:
 
 ---
 
-## 12. Success Criteria
+## 13. Success Criteria
 
 ### Functional Requirements
 
@@ -1627,6 +1970,8 @@ jobs:
 - [ ] Real-time slider updates with <100ms latency
 - [ ] Export/import works reliably across browsers
 - [ ] Docker image runs locally and deploys to cloud
+- [ ] Justfile commands work for all common operations
+- [ ] uv manages Python dependencies correctly
 
 ### Quality Requirements
 
@@ -1643,9 +1988,9 @@ jobs:
 
 ---
 
-## 13. Appendix
+## 14. Appendix
 
-### 13.1 Glossary
+### 14.1 Glossary
 
 | Term | Definition |
 |------|------------|
@@ -1661,7 +2006,7 @@ jobs:
 2. Almgren, R. & Chriss, N. (2000). "Optimal Execution of Portfolio Transactions". *Journal of Risk*.
 3. Glosten, L.R. & Milgrom, P.R. (1985). "Bid, Ask and Transaction Prices in a Specialist Market". *Journal of Financial Economics*.
 
-### 13.3 Docker Compose Configuration
+### 14.3 Docker Compose Configuration
 
 ```yaml
 # docker-compose.yml
@@ -1729,7 +2074,7 @@ services:
 #   redis_data:
 ```
 
-### 13.4 Dockerfile (Multi-Stage)
+### 14.4 Dockerfile (Multi-Stage)
 
 ```dockerfile
 # Dockerfile
@@ -1841,7 +2186,7 @@ WORKDIR /app
 CMD ["tail", "-f", "/dev/null"]  # Keep container running for dev
 ```
 
-### 13.5 TypeScript Configuration
+### 14.5 TypeScript Configuration
 
 ```json
 // frontend/tsconfig.json
@@ -1876,7 +2221,7 @@ CMD ["tail", "-f", "/dev/null"]  # Keep container running for dev
 }
 ```
 
-### 13.6 Responsive Design Guidelines
+### 14.6 Responsive Design Guidelines
 
 - **Desktop (≥1024px):** Full layout with sidebar navigation, multi-column charts
 - **Tablet (768px-1023px):** Collapsible sidebar, single-column charts, touch-friendly sliders
@@ -1892,3 +2237,4 @@ CMD ["tail", "-f", "/dev/null"]  # Keep container running for dev
 |---------|------|--------|---------|
 | 1.0 | 2026-03-20 | LOB-Modeling Team | Initial specification |
 | 1.1 | 2026-03-20 | LOB-Modeling Team | Added: project structure, session management, visualization spec schema, persistence clarification, performance optimization, security/rate limiting, Docker Compose, TypeScript config |
+| 1.2 | 2026-03-20 | LOB-Modeling Team | Added: Justfile build automation, uv package management, updated CI/CD pipeline |
