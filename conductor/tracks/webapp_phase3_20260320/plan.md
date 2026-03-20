@@ -31,25 +31,25 @@
     - [x] Add fallback to REST API if WebSocket fails
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Real-Time Simulation Streaming' (Protocol in workflow.md) (SHA: 58180cd)
 
-## Phase 3: Multi-Model Comparison
-- [ ] Task: Create model multi-select component
-    - [ ] Create `ModelMultiSelect` component with checkboxes
-    - [ ] Support selecting 2-4 models
-    - [ ] Display selected model count and names
-- [ ] Task: Implement comparison simulation runner
-    - [ ] Create `useComparison` hook
-    - [ ] Run simulations for all selected models
-    - [ ] Aggregate results for comparison
-- [ ] Task: Create comparison visualization
-    - [ ] Create `ComparisonChart` component
-    - [ ] Overlay multiple model results with distinct colors
-    - [ ] Add legend with model names
-    - [ ] Implement model visibility toggle
-- [ ] Task: Create comparison metrics table
-    - [ ] Display key metrics for all models side-by-side
-    - [ ] Highlight best/worst values
-    - [ ] Add model comparison summary
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Multi-Model Comparison' (Protocol in workflow.md)
+## Phase 3: Multi-Model Comparison [checkpoint: 69dfc99]
+- [x] Task: Create model multi-select component
+    - [x] Create `ModelMultiSelect` component with checkboxes
+    - [x] Support selecting 2-4 models
+    - [x] Display selected model count and names
+- [x] Task: Implement comparison simulation runner
+    - [x] Create `useComparison` hook
+    - [x] Run simulations for all selected models
+    - [x] Aggregate results for comparison
+- [x] Task: Create comparison visualization
+    - [x] Create `ComparisonChart` component
+    - [x] Overlay multiple model results with distinct colors
+    - [x] Add legend with model names
+    - [x] Implement model visibility toggle
+- [x] Task: Create comparison metrics table
+    - [x] Display key metrics for all models side-by-side
+    - [x] Highlight best/worst values
+    - [x] Add model comparison summary
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Multi-Model Comparison' (Protocol in workflow.md) (SHA: 69dfc99)
 
 ## Phase 4: Testing and Polish
 - [ ] Task: Write component tests
