@@ -15,6 +15,6 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Documentation and Code Standardization' (Protocol in workflow.md) (SHA: 7994e52)
 
 ## Phase 3: Final Integration and Validation
-- [ ] Task: Update main README and example notebooks
-- [ ] Task: Run all tests and ensure they pass with standardized code
+- [x] Task: Update main README and example notebooks
+- [~] Task: Run all tests and ensure they pass with standardized code
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Final Integration and Validation' (Protocol in workflow.md)
