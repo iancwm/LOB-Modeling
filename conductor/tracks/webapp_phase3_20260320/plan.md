@@ -1,20 +1,20 @@
 # Implementation Plan: LOB Modeling Webapp - Phase 3 Enhancements
 
-## Phase 1: WebSocket Infrastructure
-- [ ] Task: Update backend WebSocket router for streaming
-    - [ ] Add simulation streaming endpoint in `api/websocket.py`
-    - [ ] Implement progress callback in model wrappers
-    - [ ] Test WebSocket streaming with Kyle model
-- [ ] Task: Create WebSocket hook for frontend
-    - [ ] Install `react-use-websocket` package
-    - [ ] Create `useWebSocket` hook in `src/hooks/useWebSocket.ts`
-    - [ ] Implement connection state management
-    - [ ] Add reconnection logic with exponential backoff
-- [ ] Task: Add connection status indicator
-    - [ ] Create `ConnectionStatus` component
-    - [ ] Add status badge to navbar
-    - [ ] Style connected/disconnected/reconnecting states
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: WebSocket Infrastructure' (Protocol in workflow.md)
+## Phase 1: WebSocket Infrastructure [checkpoint: 98e3edb]
+- [x] Task: Update backend WebSocket router for streaming
+    - [x] Add simulation streaming endpoint in `api/websocket.py`
+    - [x] Implement progress callback in model wrappers
+    - [x] Test WebSocket streaming with Kyle model
+- [x] Task: Create WebSocket hook for frontend
+    - [x] Install `react-use-websocket` package
+    - [x] Create `useWebSocket` hook in `src/hooks/useWebSocket.ts`
+    - [x] Implement connection state management
+    - [x] Add reconnection logic with exponential backoff
+- [x] Task: Add connection status indicator
+    - [x] Create `ConnectionStatus` component
+    - [x] Add status badge to navbar
+    - [x] Style connected/disconnected/reconnecting states
+- [x] Task: Conductor - User Manual Verification 'Phase 1: WebSocket Infrastructure' (Protocol in workflow.md) (SHA: 98e3edb)
 
 ## Phase 2: Real-Time Simulation Streaming
 - [ ] Task: Update simulation execution to use WebSocket
