@@ -1,14 +1,35 @@
 PYTHON = python3
 PIP = pip3
 
-.PHONY: install lint test clean run-kyle run-almgren
+.PHONY: install lint format check-format check-docstrings test clean run-kyle run-almgren run-glosten run-criscuolo
 
 install:
 	$(PIP) install -r requirements.txt
 
 lint:
-	@echo "Linting..."
+	@echo "Running flake8..."
 	flake8 src/lob_modeling tests
+	@echo "Running black check..."
+	black --check src/lob_modeling tests
+	@echo "Running isort check..."
+	isort --check-only src/lob_modeling tests
+	@echo "Running pydocstyle check..."
+	pydocstyle src/lob_modeling
+
+format:
+	@echo "Formatting code with black..."
+	black src/lob_modeling tests
+	@echo "Sorting imports with isort..."
+	isort src/lob_modeling tests
+
+check-format:
+	@echo "Checking code formatting..."
+	black --check src/lob_modeling tests
+	isort --check-only src/lob_modeling tests
+
+check-docstrings:
+	@echo "Checking docstring conventions..."
+	pydocstyle src/lob_modeling
 
 test:
 	@echo "Running tests..."

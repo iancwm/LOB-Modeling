@@ -5,3 +5,10 @@ scipy
 scikit-learn
 statsmodels
 yfinance
+plotly
+
+# Development & Linting
+flake8
+black
+isort
+pydocstyle
