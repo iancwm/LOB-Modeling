@@ -1,4 +1,6 @@
 .crush
 venv
 src/lob_modeling/__pycache__
-*.pycfrontend/node_modules/
+*.pyc
+frontend/
+node_modules/
