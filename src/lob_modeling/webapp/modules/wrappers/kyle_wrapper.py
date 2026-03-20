@@ -142,24 +142,24 @@ class KyleModelModule(ModelModule):
         # Run multiperiod simulation
         result = model.multiperiod_price(plot=False)
 
+        # Convert numpy arrays to lists for JSON serialization
+        price_changes = result.get("price_changes", [])
+        informed_orders = result.get("informed_orders", [])
+        noise_orders = result.get("noise_orders", [])
+        sigma = result.get("SIGMA", [])
+
         # Convert to SimulationResult format
         time_series = {
             "time": list(range(N + 1)),
             "true_value": [V_0] * (N + 1),  # Simplified for now
-            "market_price": result.get("price_changes", [0] * (N + 1)),
-            "informed_order": result.get("informed_orders", [0] * (N + 1)),
-            "noise_order": result.get("noise_orders", [0] * (N + 1)),
+            "market_price": price_changes.tolist() if hasattr(price_changes, 'tolist') else list(price_changes),
+            "informed_order": informed_orders.tolist() if hasattr(informed_orders, 'tolist') else list(informed_orders),
+            "noise_order": noise_orders.tolist() if hasattr(noise_orders, 'tolist') else list(noise_orders),
         }
 
         metrics = {
-            "final_price": (
-                time_series["market_price"][-1] if time_series["market_price"] else 0
-            ),
-            "price_variance": (
-                sum(result.get("SIGMA", [0])) / len(result.get("SIGMA", [1]))
-                if result.get("SIGMA")
-                else 0
-            ),
+            "final_price": float(time_series["market_price"][-1]) if len(time_series["market_price"]) > 0 else 0.0,
+            "price_variance": float(sum(sigma) / len(sigma)) if len(sigma) > 0 else 0.0,
         }
 
         return SimulationResult(
