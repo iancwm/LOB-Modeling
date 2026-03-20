@@ -14,27 +14,27 @@
 - [x] Task: Create basic `index.html` and `src/main.tsx` entry points
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Project Setup' (Protocol in workflow.md) (SHA: edcd29c)
 
-## Phase 2: Core Components
-- [ ] Task: Implement basic `App.tsx` with navigation shell
-    - [ ] Create header with application title
-    - [ ] Create main content area layout
-    - [ ] Apply Bootstrap styling
-- [ ] Task: Create model selector component (`src/components/ModelSelector.tsx`)
-    - [ ] Fetch models from `GET /models` endpoint
-    - [ ] Render dropdown with model display names
-    - [ ] Handle selection and load model details
-    - [ ] Display model description
-- [ ] Task: Create parameter controls component (`src/components/ParameterControls.tsx`)
-    - [ ] Accept parameter schema as props
-    - [ ] Render numeric inputs with validation
-    - [ ] Display parameter descriptions
-    - [ ] Pre-populate with default values
-- [ ] Task: Create results visualization component (`src/components/ResultsChart.tsx`)
-    - [ ] Accept time series data as props
-    - [ ] Render Plotly.js chart
-    - [ ] Support multi-line charts
-    - [ ] Display metrics summary
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Components' (Protocol in workflow.md)
+## Phase 2: Core Components [checkpoint: 553aa27]
+- [x] Task: Implement basic `App.tsx` with navigation shell
+    - [x] Create header with application title
+    - [x] Create main content area layout
+    - [x] Apply Bootstrap styling
+- [x] Task: Create model selector component (`src/components/ModelSelector.tsx`)
+    - [x] Fetch models from `GET /models` endpoint
+    - [x] Render dropdown with model display names
+    - [x] Handle selection and load model details
+    - [x] Display model description
+- [x] Task: Create parameter controls component (`src/components/ParameterControls.tsx`)
+    - [x] Accept parameter schema as props
+    - [x] Render numeric inputs with validation
+    - [x] Display parameter descriptions
+    - [x] Pre-populate with default values
+- [x] Task: Create results visualization component (`src/components/ResultsChart.tsx`)
+    - [x] Accept time series data as props
+    - [x] Render Plotly.js chart
+    - [x] Support multi-line charts
+    - [x] Display metrics summary
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Core Components' (Protocol in workflow.md) (SHA: 553aa27)
 
 ## Phase 3: API Integration and State Management
 - [ ] Task: Create API service (`src/services/api.ts`)
