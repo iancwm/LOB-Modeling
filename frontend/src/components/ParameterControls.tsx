@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { Card, Form, Button, Spinner, Alert } from 'react-bootstrap'
+import { Card, Form, Button, Spinner, Alert, ProgressBar } from 'react-bootstrap'
 import { useApp } from '../context/AppContext'
 import { runSimulation } from '../services/api'
 
 export default function ParameterControls() {
   const { selectedModel, parameters, setParameters, setResults, setLoading, loading, setError } = useApp()
   const [localParams, setLocalParams] = useState<Record<string, number>>(parameters)
+  const [progress, setProgress] = useState<number>(0)
 
   const handleParamChange = (name: string, value: string) => {
     const numValue = parseFloat(value)
@@ -20,13 +21,35 @@ export default function ParameterControls() {
     try {
       setLoading(true)
       setError(null)
+      setProgress(0)
+      
+      // Simulate progress updates
+      const progressInterval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval)
+            return 90
+          }
+          return prev + 10
+        })
+      }, 200)
+      
       const result = await runSimulation(selectedModel.id, localParams)
+      
+      clearInterval(progressInterval)
+      setProgress(100)
       setResults(result)
+      
+      // Reset progress after a short delay
+      setTimeout(() => {
+        setProgress(0)
+        setLoading(false)
+      }, 500)
     } catch (err) {
       setError('Simulation failed. Please check parameters and try again.')
       console.error('Simulation error:', err)
-    } finally {
       setLoading(false)
+      setProgress(0)
     }
   }
 
@@ -75,6 +98,16 @@ export default function ParameterControls() {
             />
           </Form.Group>
         ))}
+        {loading && (
+          <div className="mb-3">
+            <ProgressBar 
+              animated 
+              now={progress} 
+              label={progress === 100 ? 'Complete!' : `Running... (${progress}%)`}
+              variant={progress === 100 ? 'success' : 'primary'}
+            />
+          </div>
+        )}
         <div className="d-grid gap-2">
           <Button 
             variant="primary" 

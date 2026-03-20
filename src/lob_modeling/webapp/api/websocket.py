@@ -76,7 +76,33 @@ async def run_simulation_stream(
 
     try:
         module = get_module(model_id)
+        
+        # Send progress start
+        await ws_manager.send_to_session(
+            session_id,
+            {
+                "type": "simulation_progress",
+                "payload": {
+                    "progress": 0,
+                    "status": "Starting simulation...",
+                },
+            },
+        )
+
+        # Run simulation
         result = module.simulate(params)
+
+        # Send progress complete
+        await ws_manager.send_to_session(
+            session_id,
+            {
+                "type": "simulation_progress",
+                "payload": {
+                    "progress": 100,
+                    "status": "Complete",
+                },
+            },
+        )
 
         # Update session with result
         session_store.update_result(session_id, result.to_dict())
