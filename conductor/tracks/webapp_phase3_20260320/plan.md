@@ -1,0 +1,72 @@
+# Implementation Plan: LOB Modeling Webapp - Phase 3 Enhancements
+
+## Phase 1: WebSocket Infrastructure
+- [ ] Task: Update backend WebSocket router for streaming
+    - [ ] Add simulation streaming endpoint in `api/websocket.py`
+    - [ ] Implement progress callback in model wrappers
+    - [ ] Test WebSocket streaming with Kyle model
+- [ ] Task: Create WebSocket hook for frontend
+    - [ ] Install `react-use-websocket` package
+    - [ ] Create `useWebSocket` hook in `src/hooks/useWebSocket.ts`
+    - [ ] Implement connection state management
+    - [ ] Add reconnection logic with exponential backoff
+- [ ] Task: Add connection status indicator
+    - [ ] Create `ConnectionStatus` component
+    - [ ] Add status badge to navbar
+    - [ ] Style connected/disconnected/reconnecting states
+- [ ] Task: Conductor - User Manual Verification 'Phase 1: WebSocket Infrastructure' (Protocol in workflow.md)
+
+## Phase 2: Real-Time Simulation Streaming
+- [ ] Task: Update simulation execution to use WebSocket
+    - [ ] Modify `ParameterControls` to use WebSocket streaming
+    - [ ] Implement live chart updates with `Plotly.extendTraces`
+    - [ ] Add progress indicator during simulation
+- [ ] Task: Create streaming results component
+    - [ ] Create `StreamingChart` component
+    - [ ] Handle partial result updates
+    - [ ] Implement smooth animations for updates
+- [ ] Task: Error handling and recovery
+    - [ ] Display error messages for failed simulations
+    - [ ] Implement retry mechanism
+    - [ ] Add fallback to REST API if WebSocket fails
+- [ ] Task: Conductor - User Manual Verification 'Phase 2: Real-Time Simulation Streaming' (Protocol in workflow.md)
+
+## Phase 3: Multi-Model Comparison
+- [ ] Task: Create model multi-select component
+    - [ ] Create `ModelMultiSelect` component with checkboxes
+    - [ ] Support selecting 2-4 models
+    - [ ] Display selected model count and names
+- [ ] Task: Implement comparison simulation runner
+    - [ ] Create `useComparison` hook
+    - [ ] Run simulations for all selected models
+    - [ ] Aggregate results for comparison
+- [ ] Task: Create comparison visualization
+    - [ ] Create `ComparisonChart` component
+    - [ ] Overlay multiple model results with distinct colors
+    - [ ] Add legend with model names
+    - [ ] Implement model visibility toggle
+- [ ] Task: Create comparison metrics table
+    - [ ] Display key metrics for all models side-by-side
+    - [ ] Highlight best/worst values
+    - [ ] Add model comparison summary
+- [ ] Task: Conductor - User Manual Verification 'Phase 3: Multi-Model Comparison' (Protocol in workflow.md)
+
+## Phase 4: Testing and Polish
+- [ ] Task: Write component tests
+    - [ ] Test `ConnectionStatus` component
+    - [ ] Test `ModelMultiSelect` component
+    - [ ] Test `ComparisonChart` component
+    - [ ] Test WebSocket hook with mocks
+- [ ] Task: Write integration tests
+    - [ ] Test WebSocket connection and streaming
+    - [ ] Test multi-model simulation flow
+    - [ ] Test error handling and reconnection
+- [ ] Task: UI polish and responsive design
+    - [ ] Ensure consistent Bootstrap styling
+    - [ ] Add responsive layout for comparison view
+    - [ ] Improve loading states and transitions
+- [ ] Task: Performance optimization
+    - [ ] Optimize chart updates for large datasets
+    - [ ] Implement memoization for comparison calculations
+    - [ ] Test memory usage during extended sessions
+- [ ] Task: Conductor - User Manual Verification 'Phase 4: Testing and Polish' (Protocol in workflow.md)
