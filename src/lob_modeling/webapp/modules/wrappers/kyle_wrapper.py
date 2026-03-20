@@ -2,6 +2,7 @@
 
 import sys
 from pathlib import Path
+from typing import Any, Dict
 
 # Add src to path to import existing models
 src_path = Path(__file__).parent.parent.parent.parent
@@ -113,7 +114,7 @@ class KyleModelModule(ModelModule):
             ),
         ]
 
-    def simulate(self, params: dict[str, any]) -> SimulationResult:
+    def simulate(self, params: Dict[str, Any]) -> SimulationResult:
         """Run simulation with given parameters.
 
         Args:
