@@ -1,0 +1,8 @@
+{
+  "track_id": "webapp_phase1_20260320",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-03-20T00:00:00Z",
+  "updated_at": "2026-03-20T00:00:00Z",
+  "description": "LOB Modeling Webapp - Phase 1: Foundation (Backend + Frontend shell + Docker)"
+}
