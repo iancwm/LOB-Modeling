@@ -1,28 +1,69 @@
+"""Almgren-Chriss (2000) - Optimal execution of portfolio transactions.
+
+This module implements deviations from the seminal Almgren & Chriss (2000) model
+for optimal execution, including both dynamic programming and quadratic
+programming solutions.
+"""
+
 import math
+from typing import Any, Dict, List, Tuple
+
 import numpy as np
 import plotly.graph_objects as go
 from scipy.optimize import minimize
 
 
 class AlmgrenChriss2000:
+    """Almgren-Chriss model for optimal trade execution.
+
+    This class implements the Almgren & Chriss (2000) framework for optimal
+    execution of portfolio transactions, with both dynamic programming and
+    quadratic programming solvers.
+
+    Attributes:
+        ALPHA: Power of temporary impact function.
+        ETA: Linear coefficient of temporary impact function.
+        GAMMA: Linear coefficient of permanent impact function.
+        BETA: Power of permanent impact function.
+        LAMBDA: Risk aversion measure.
+        SIGMA: Annual volatility.
+        EPSILON: Bid-ask spread and fees (fixed cost per share).
+        MU: Expected drift term (set to 0 if no drift).
+        N: Number of time steps/buckets.
+        T: Expiry time in days (when holdings must be depleted).
+        TAU: Time increment (sqrt(T/N)).
+        KAPPA: Intermediate parameter for optimization.
+        X: Initial number of shares held.
     """
-    Description:
-    Select few deviations from the seminal model/work of Almgren & Chriss in their 2000 paper
-    "Optimal Execution of Portfolio Transactions"
-    """
-    def __init__(self, ALPHA=1, ETA=5e-6, GAMMA=5e-5, BETA=1, LAMBDA=0.00009, SIGMA=0.495, EPSILON=0.0625, MU=0, N=50, T=0.025, X=500):
-        """
-        :param ALPHA: power of temporary impact function
-        :param ETA: linear coefficient of temporary impact function
-        :param GAMMA: linear coefficient of permanent impact function
-        :param BETA: power of permanent impact function
-        :param LAMBDA: risk aversion measure**
-        :param SIGMA: annual vol
-        :param EPSILON: bid-ask spread + fees ~ fixed cost of selling ($/share)
-        :param MU: expected drift term, set to 0 if no drift is present
-        :param N: number of time steps/buckets (integer)
-        :param T: expiry - when holdings must be depleted (days)
-        :param X: number of shares holding initially (integer)
+
+    def __init__(
+        self,
+        ALPHA: float = 1,
+        ETA: float = 5e-6,
+        GAMMA: float = 5e-5,
+        BETA: float = 1,
+        LAMBDA: float = 0.00009,
+        SIGMA: float = 0.495,
+        EPSILON: float = 0.0625,
+        MU: float = 0,
+        N: int = 50,
+        T: float = 0.025,
+        X: int = 500,
+    ) -> None:
+        """Initialize the Almgren-Chriss model with specified parameters.
+
+        Args:
+            ALPHA: Power of temporary impact function. Defaults to 1.
+            ETA: Linear coefficient of temporary impact. Defaults to 5e-6.
+            GAMMA: Linear coefficient of permanent impact. Defaults to 5e-5.
+            BETA: Power of permanent impact function. Defaults to 1.
+            LAMBDA: Risk aversion measure. Defaults to 0.00009.
+            SIGMA: Annual volatility. Defaults to 0.495.
+            EPSILON: Bid-ask spread + fees ($/share). Defaults to 0.0625.
+            MU: Expected drift term. Defaults to 0.
+            N: Number of time steps. Defaults to 50.
+            T: Expiry time in days. Defaults to 0.025.
+            X: Initial number of shares. Defaults to 500.
         """
         self.ALPHA = float(ALPHA)
         self.ETA = float(ETA)
@@ -35,23 +76,60 @@ class AlmgrenChriss2000:
         self.N = int(N)
         self.T = float(T)
         self.TAU = math.sqrt(self.T / self.N)
-        self.KAPPA = math.sqrt((self.LAMBDA * (self.SIGMA ** 2)) /
-                                (self.ETA * (1 + ((0.5 * self.GAMMA * self.TAU) / self.ETA))))
+        self.KAPPA = math.sqrt(
+            (self.LAMBDA * (self.SIGMA**2))
+            / (self.ETA * (1 + ((0.5 * self.GAMMA * self.TAU) / self.ETA)))
+        )
         self.X = int(X)
 
-    def temp_impact(self, x):
-        return self.ETA * (x ** self.ALPHA)
+    def temp_impact(self, x: float) -> float:
+        """Calculate temporary market impact.
 
-    def perm_impact(self, x):
-        return self.GAMMA * (x ** self.BETA)
+        Args:
+            x: Trading rate.
 
-    def hamiltonian(self, x, n):
-        eq = self.LAMBDA * n * self.perm_impact(n / self.TAU) + \
-             self.LAMBDA * (x - n) * self.TAU * self.temp_impact(n / self.TAU) +\
-             (0.5 * (self.LAMBDA ** 2) * (self.SIGMA ** 2) * self.TAU * ((x - n) ** 2))
+        Returns:
+            Temporary impact cost.
+        """
+        return self.ETA * (x**self.ALPHA)
+
+    def perm_impact(self, x: float) -> float:
+        """Calculate permanent market impact.
+
+        Args:
+            x: Trading rate.
+
+        Returns:
+            Permanent impact cost.
+        """
+        return self.GAMMA * (x**self.BETA)
+
+    def hamiltonian(self, x: int, n: int) -> float:
+        """Compute the Hamiltonian for the optimization problem.
+
+        Args:
+            x: Current inventory level.
+            n: Number of shares to trade.
+
+        Returns:
+            Hamiltonian value for the given state.
+        """
+        eq = (
+            self.LAMBDA * n * self.perm_impact(n / self.TAU)
+            + self.LAMBDA * (x - n) * self.TAU * self.temp_impact(n / self.TAU)
+            + (0.5 * (self.LAMBDA**2) * (self.SIGMA**2) * self.TAU * ((x - n) ** 2))
+        )
         return eq
 
-    def variance_IS(self, opt_sale):
+    def variance_IS(self, opt_sale: np.ndarray) -> float:
+        """Calculate variance of implementation shortfall.
+
+        Args:
+            opt_sale: Array of optimal sales at each time step.
+
+        Returns:
+            Variance of the implementation shortfall.
+        """
         variance_shortfall = 0
         step = -1
         while step < len(opt_sale) - 1:
@@ -59,19 +137,33 @@ class AlmgrenChriss2000:
             temp = (self.X - np.sum(opt_sale[0:step])) ** 2
             variance_shortfall += temp
 
-        variance_shortfall = self.TAU * (self.SIGMA ** 2) * variance_shortfall
+        variance_shortfall = self.TAU * (self.SIGMA**2) * variance_shortfall
         return variance_shortfall
 
-    def bellman_solve(self, plot=False):
+    def bellman_solve(
+        self, plot: bool = False
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, float, float]:
+        """Solve for optimal execution strategy using dynamic programming.
+
+        Uses stochastic control (Bellman equation) to find the optimal trading
+        strategy that minimizes expected cost.
+
+        Args:
+            plot: If True, creates an interactive Plotly visualization of
+                the execution strategy. Defaults to False.
+
+        Returns:
+            A tuple containing:
+                - value_func: Value function array (N x (X+1)).
+                - opt_moves: Optimal trading moves array (N x (X+1)).
+                - inventory: Inventory trajectory over time.
+                - opt_sale: Optimal sales at each time step.
+                - expected_shortfall: Expected implementation shortfall.
+                - variance_shortfall: Variance of implementation shortfall.
         """
-        Using stochastic control to solve for best execution strategy
-        :param plot: graph of strategy
-        :return: 5-tup of value function, optimal trading set/strategy,
-        inventory over time, as well as basic implentational shortfall expectation & variance for comparison purposes
-        """
-        value_func = np.zeros(shape=(self.N, self.X + 1), dtype='float64')
-        opt_moves = np.zeros(shape=(self.N, self.X + 1), dtype='int')
-        inventory = np.zeros(shape=(self.N, 1), dtype='int')
+        value_func = np.zeros(shape=(self.N, self.X + 1), dtype="float64")
+        opt_moves = np.zeros(shape=(self.N, self.X + 1), dtype="int")
+        inventory = np.zeros(shape=(self.N, 1), dtype="int")
         inventory[0] = self.X
         opt_sale = []
 
@@ -81,11 +173,15 @@ class AlmgrenChriss2000:
 
         for step in range(self.N - 2, -1, -1):
             for x in range(self.X + 1):
-                best_value = value_func[step + 1, 0] * np.exp(self.hamiltonian(x, x))
+                best_value = value_func[step + 1, 0] * np.exp(
+                    self.hamiltonian(x, x)
+                )
                 best_n = x
 
                 for n in range(x):
-                    current_value = value_func[step + 1, x - n] * np.exp(self.hamiltonian(x, n))
+                    current_value = value_func[step + 1, x - n] * np.exp(
+                        self.hamiltonian(x, n)
+                    )
                     if current_value < best_value:
                         best_value = current_value
                         best_n = n
@@ -97,8 +193,12 @@ class AlmgrenChriss2000:
             inventory[step] = inventory[step - 1] - opt_moves[step, inventory[step - 1]]
             opt_sale.append(opt_moves[step - 1, inventory[step - 1]])
 
-        expected_shortfall = 0.5 * self.GAMMA * (self.X ** 2) + self.EPSILON * np.sum(opt_sale) +\
-                             ((self.ETA - 0.5 * self.GAMMA) / self.TAU) * np.sum([sale ** 2 for sale in opt_sale])
+        expected_shortfall = (
+            0.5 * self.GAMMA * (self.X**2)
+            + self.EPSILON * np.sum(opt_sale)
+            + ((self.ETA - 0.5 * self.GAMMA) / self.TAU)
+            * np.sum([sale**2 for sale in opt_sale])
+        )
 
         variance_shortfall = self.variance_IS(opt_sale)
 
@@ -109,53 +209,99 @@ class AlmgrenChriss2000:
                 go.Scatter(
                     x=list(range(len(inventory))),
                     y=inventory,
-                    mode='lines',
-                    name='Inventory',
-                    line=dict(color='blue', width=2)
+                    mode="lines",
+                    name="Inventory",
+                    line=dict(color="blue", width=2),
                 )
             )
             fig.update_layout(
-                title='Optimal Execution - Dynamic Programming',
-                xaxis_title='Trading Step',
-                yaxis_title='Number of Shares',
-                hovermode='x unified',
-                template='plotly_white',
-                height=600
+                title="Optimal Execution - Dynamic Programming",
+                xaxis_title="Trading Step",
+                yaxis_title="Number of Shares",
+                hovermode="x unified",
+                template="plotly_white",
+                height=600,
             )
             fig.show()
 
-        return value_func, opt_moves, inventory, opt_sale, expected_shortfall, variance_shortfall
+        return (
+            value_func,
+            opt_moves,
+            inventory,
+            opt_sale,
+            expected_shortfall,
+            variance_shortfall,
+        )
 
-    def basic_almgren(self, plot=True):
+    def basic_almgren(
+        self, plot: bool = True
+    ) -> Tuple[np.ndarray, List[int], float, float]:
+        """Solve for optimal execution using quadratic programming.
+
+        Implements the baseline quadratic cost model from Almgren & Chriss (2000)
+        with linear impact costs.
+
+        Args:
+            plot: If True, creates an interactive Plotly visualization of
+                the execution strategy. Defaults to True.
+
+        Returns:
+            A tuple containing:
+                - opt_sale: Optimal sales at each time step.
+                - inventory: Inventory trajectory over time.
+                - expected_shortfall: Expected implementation shortfall.
+                - variance_shortfall: Variance of implementation shortfall.
         """
-        The baseline quadratic cost 2000 method for optimal execution from the paper - linear impact
-        :return: opt_moves,
-        """
-        def optimal_objective(sale):
+
+        def optimal_objective(sale: np.ndarray) -> float:
+            """Compute the quadratic objective function for optimization.
+
+            Args:
+                sale: Array of sales at each time step.
+
+            Returns:
+                Total objective cost (expected cost + risk penalty).
             """
-            verbatim quadratic functuon of the control params
-            :param sale: array
-            :return: objective func
-            """
-            expected_cost = 0.5 * self.GAMMA * (self.X ** 2) \
-                            - (self.MU * np.sum([self.TAU * (self.X - inventory) for inventory in np.cumsum(sale)])) \
-                            + self.EPSILON * np.sum([abs(order) for order in sale]) \
-                            + ((self.ETA - 0.5 * self.GAMMA) / self.TAU) * np.sum([order ** 2 for order in sale])
+            expected_cost = (
+                0.5 * self.GAMMA * (self.X**2)
+                - (
+                    self.MU
+                    * np.sum(
+                        [
+                            self.TAU * (self.X - inventory)
+                            for inventory in np.cumsum(sale)
+                        ]
+                    )
+                )
+                + self.EPSILON * np.sum([abs(order) for order in sale])
+                + ((self.ETA - 0.5 * self.GAMMA) / self.TAU)
+                * np.sum([order**2 for order in sale])
+            )
             variance_cost = self.variance_IS(sale)
             objective_cost = expected_cost + self.LAMBDA * variance_cost
             return objective_cost
 
         trades = np.zeros((self.N, 1))
-        BOUNDS = tuple((0.0, self.X) for x in range(len(trades)))
-        CONSTRAINTS = ({'type': 'eq', 'fun': lambda x: np.sum(x) - self.X})
-        opt_sale = minimize(optimal_objective, trades.flatten(), method='SLSQP', bounds=BOUNDS, constraints=CONSTRAINTS)
+        BOUNDS = tuple((0.0, self.X) for _ in range(len(trades)))
+        CONSTRAINTS = {"type": "eq", "fun": lambda x: np.sum(x) - self.X}
+        opt_sale = minimize(
+            optimal_objective,
+            trades.flatten(),
+            method="SLSQP",
+            bounds=BOUNDS,
+            constraints=CONSTRAINTS,
+        )
         opt_sale = np.array(opt_sale.x)
         inventory = [self.X]
-        for t in range((len(opt_sale))):
+        for t in range(len(opt_sale)):
             inventory.append(inventory[t] - opt_sale[t])
 
-        expected_shortfall = 0.5 * self.GAMMA * (self.X ** 2) + self.EPSILON * np.sum(opt_sale) + \
-                             ((self.ETA - 0.5 * self.GAMMA) / self.TAU) * np.sum([sale ** 2 for sale in opt_sale])
+        expected_shortfall = (
+            0.5 * self.GAMMA * (self.X**2)
+            + self.EPSILON * np.sum(opt_sale)
+            + ((self.ETA - 0.5 * self.GAMMA) / self.TAU)
+            * np.sum([sale**2 for sale in opt_sale])
+        )
         variance_shortfall = self.variance_IS(opt_sale)
 
         if plot:
@@ -164,25 +310,27 @@ class AlmgrenChriss2000:
                 go.Scatter(
                     x=list(range(len(inventory))),
                     y=inventory,
-                    mode='lines',
-                    name='Inventory',
-                    line=dict(color='blue', width=2)
+                    mode="lines",
+                    name="Inventory",
+                    line=dict(color="blue", width=2),
                 )
             )
             fig.update_layout(
-                title='Optimal Execution - Quadratic Programming',
-                xaxis_title='Trading Step',
-                yaxis_title='Number of Shares',
-                hovermode='x unified',
-                template='plotly_white',
-                height=600
+                title="Optimal Execution - Quadratic Programming",
+                xaxis_title="Trading Step",
+                yaxis_title="Number of Shares",
+                hovermode="x unified",
+                template="plotly_white",
+                height=600,
             )
             fig.show()
 
         return opt_sale, inventory, expected_shortfall, variance_shortfall
 
-    def reinforcement_learn(self):
-        """
-        WIP - I'm thinking making this more interesting based off Bao & Liu's recent paper on multi-agents
+    def reinforcement_learn(self) -> None:
+        """Placeholder for future reinforcement learning implementation.
+
+        TODO: Implement multi-agent reinforcement learning approach based on
+        Bao & Liu's recent paper.
         """
         pass
