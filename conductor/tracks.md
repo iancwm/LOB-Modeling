@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: LOB Modeling Webapp - Phase 1: Foundation**
+- [~] **Track: LOB Modeling Webapp - Phase 1: Foundation**
   *Link: [./tracks/webapp_phase1_20260320/](./tracks/webapp_phase1_20260320/)*

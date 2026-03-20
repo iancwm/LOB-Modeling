@@ -1,16 +1,16 @@
 # Implementation Plan: LOB Modeling Webapp - Phase 1 Foundation
 
 ## Phase 1: Backend Setup
-- [ ] Task: Create `src/lob_modeling/webapp/` package structure with `__init__.py`
-- [ ] Task: Implement `ModelModule` abstract base class in `modules/base.py`
-- [ ] Task: Create module registry in `modules/registry.py`
-- [ ] Task: Implement Kyle Model wrapper in `modules/wrappers/kyle_wrapper.py`
-- [ ] Task: Create session management (`session/store.py`, `session/manager.py`)
-- [ ] Task: Implement REST API router (`api/rest.py`)
-- [ ] Task: Implement WebSocket router (`api/websocket.py`)
-- [ ] Task: Create FastAPI application entry point (`main.py`)
-- [ ] Task: Create `pyproject.toml` with webapp dependencies
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Setup' (Protocol in workflow.md)
+- [x] Task: Create `src/lob_modeling/webapp/` package structure with `__init__.py`
+- [x] Task: Implement `ModelModule` abstract base class in `modules/base.py`
+- [x] Task: Create module registry in `modules/registry.py`
+- [x] Task: Implement Kyle Model wrapper in `modules/wrappers/kyle_wrapper.py`
+- [x] Task: Create session management (`session/store.py`, `session/manager.py`)
+- [x] Task: Implement REST API router (`api/rest.py`)
+- [x] Task: Implement WebSocket router (`api/websocket.py`)
+- [x] Task: Create FastAPI application entry point (`main.py`)
+- [x] Task: Create `pyproject.toml` with webapp dependencies
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Backend Setup' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Setup
 - [ ] Task: Create `frontend/` directory structure
