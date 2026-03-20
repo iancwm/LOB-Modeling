@@ -16,20 +16,20 @@
     - [x] Style connected/disconnected/reconnecting states
 - [x] Task: Conductor - User Manual Verification 'Phase 1: WebSocket Infrastructure' (Protocol in workflow.md) (SHA: 98e3edb)
 
-## Phase 2: Real-Time Simulation Streaming
-- [ ] Task: Update simulation execution to use WebSocket
-    - [ ] Modify `ParameterControls` to use WebSocket streaming
-    - [ ] Implement live chart updates with `Plotly.extendTraces`
-    - [ ] Add progress indicator during simulation
-- [ ] Task: Create streaming results component
-    - [ ] Create `StreamingChart` component
-    - [ ] Handle partial result updates
-    - [ ] Implement smooth animations for updates
-- [ ] Task: Error handling and recovery
-    - [ ] Display error messages for failed simulations
-    - [ ] Implement retry mechanism
-    - [ ] Add fallback to REST API if WebSocket fails
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Real-Time Simulation Streaming' (Protocol in workflow.md)
+## Phase 2: Real-Time Simulation Streaming [checkpoint: 58180cd]
+- [x] Task: Update simulation execution to use WebSocket
+    - [x] Modify `ParameterControls` to use WebSocket streaming
+    - [x] Implement live chart updates with `Plotly.extendTraces`
+    - [x] Add progress indicator during simulation
+- [x] Task: Create streaming results component
+    - [x] Create `StreamingChart` component
+    - [x] Handle partial result updates
+    - [x] Implement smooth animations for updates
+- [x] Task: Error handling and recovery
+    - [x] Display error messages for failed simulations
+    - [x] Implement retry mechanism
+    - [x] Add fallback to REST API if WebSocket fails
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Real-Time Simulation Streaming' (Protocol in workflow.md) (SHA: 58180cd)
 
 ## Phase 3: Multi-Model Comparison
 - [ ] Task: Create model multi-select component
