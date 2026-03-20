@@ -3,6 +3,7 @@ import { AppProvider } from './context/AppContext'
 import ModelSelector from './components/ModelSelector'
 import ParameterControls from './components/ParameterControls'
 import ResultsChart from './components/ResultsChart'
+import ConnectionStatus from './components/ConnectionStatus'
 
 function App() {
   return (
@@ -10,7 +11,8 @@ function App() {
       <Navbar bg="dark" variant="dark" expand="lg">
         <Container>
           <Navbar.Brand href="/">LOB Modeling Webapp</Navbar.Brand>
-          <Navbar.Text className="text-muted ms-3">v0.1.0</Navbar.Text>
+          <Navbar.Text className="text-muted ms-3">v0.3.0</Navbar.Text>
+          <ConnectionStatus />
         </Container>
       </Navbar>
       <Container className="mt-4">
