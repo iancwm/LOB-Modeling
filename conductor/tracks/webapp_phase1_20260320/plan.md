@@ -31,3 +31,6 @@
 - [ ] Task: Create basic frontend tests in `tests/frontend/`
 - [ ] Task: Test full integration: `docker-compose up` and verify both services work
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Infrastructure and Integration' (Protocol in workflow.md)
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions 406aafb
