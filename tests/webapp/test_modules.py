@@ -1,14 +1,15 @@
 """Tests for the module base classes."""
 
-import pytest
 from typing import Any, Dict, List
 
+import pytest
+
 from src.lob_modeling.webapp.modules.base import (
+    EducationalContent,
     ModelModule,
     ParameterSpec,
-    VisualizationSpec,
     SimulationResult,
-    EducationalContent,
+    VisualizationSpec,
 )
 
 
@@ -207,6 +208,7 @@ class TestModelModule:
 
     def test_concrete_implementation(self):
         """Test that a concrete implementation can be created."""
+
         class TestModule(ModelModule):
             @property
             def model_id(self) -> str:

@@ -1,12 +1,13 @@
 """Tests for session management."""
 
-import pytest
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from src.lob_modeling.webapp.session.store import SessionData, InMemorySessionStore
+import pytest
+
 from src.lob_modeling.webapp.session.manager import WebSocketManager
+from src.lob_modeling.webapp.session.store import InMemorySessionStore, SessionData
 
 
 class TestSessionData:
@@ -62,12 +63,13 @@ class TestInMemorySessionStore:
         data = store.get("nonexistent")
         assert data is None
 
-    def test_get_updates_last_activity(self):
+    @pytest.mark.asyncio
+    async def test_get_updates_last_activity(self):
         """Test that getting a session updates last_activity."""
         store = InMemorySessionStore()
         store.create("test-123", "kyle", {})
         initial_activity = store._store["test-123"].last_activity
-        asyncio.sleep(0.1)  # Small delay
+        await asyncio.sleep(0.01)  # Small delay
         store.get("test-123")
         assert store._store["test-123"].last_activity >= initial_activity
 
@@ -103,18 +105,21 @@ class TestInMemorySessionStore:
         """Test that cleanup task removes expired sessions."""
         store = InMemorySessionStore(ttl_minutes=1)
         store.create("test-123", "kyle", {})
-        
+
         # Manually expire the session
-        store._store["test-123"].last_activity = datetime.utcnow() - timedelta(minutes=2)
-        
+        store._store["test-123"].last_activity = datetime.now(timezone.utc) - timedelta(
+            minutes=2
+        )
+
         # Run cleanup manually
         expired = [
-            sid for sid, data in store._store.items()
-            if datetime.utcnow() - data.last_activity > store._ttl
+            sid
+            for sid, data in store._store.items()
+            if datetime.now(timezone.utc) - data.last_activity > store._ttl
         ]
         for sid in expired:
             del store._store[sid]
-        
+
         assert "test-123" not in store._store
 
     @pytest.mark.asyncio
@@ -143,9 +148,9 @@ class TestWebSocketManager:
         manager = WebSocketManager()
         websocket = AsyncMock()
         websocket.accept = AsyncMock()
-        
+
         await manager.connect("test-123", websocket)
-        
+
         websocket.accept.assert_called_once()
         assert "test-123" in manager._active_connections
         assert "test-123" in manager._session_locks
@@ -155,9 +160,9 @@ class TestWebSocketManager:
         manager = WebSocketManager()
         manager._active_connections["test-123"] = MagicMock()
         manager._session_locks["test-123"] = asyncio.Lock()
-        
+
         manager.disconnect("test-123")
-        
+
         assert "test-123" not in manager._active_connections
         assert "test-123" not in manager._session_locks
 
@@ -174,10 +179,10 @@ class TestWebSocketManager:
         websocket = AsyncMock()
         websocket.send_json = AsyncMock()
         manager._active_connections["test-123"] = websocket
-        
+
         message = {"type": "test", "data": "value"}
         await manager.send_to_session("test-123", message)
-        
+
         websocket.send_json.assert_called_once_with(message)
 
     @pytest.mark.asyncio
@@ -194,10 +199,10 @@ class TestWebSocketManager:
         ws1 = AsyncMock()
         ws2 = AsyncMock()
         manager._active_connections = {"session1": ws1, "session2": ws2}
-        
+
         message = {"type": "broadcast"}
         await manager.broadcast(message)
-        
+
         ws1.send_json.assert_called_once_with(message)
         ws2.send_json.assert_called_once_with(message)
 
@@ -208,10 +213,10 @@ class TestWebSocketManager:
         ws1 = AsyncMock()
         ws2 = AsyncMock()
         manager._active_connections = {"session1": ws1, "session2": ws2}
-        
+
         message = {"type": "broadcast"}
         await manager.broadcast(message, exclude={"session1"})
-        
+
         ws1.send_json.assert_not_called()
         ws2.send_json.assert_called_once_with(message)
 
@@ -219,7 +224,7 @@ class TestWebSocketManager:
         """Test getting a session lock."""
         manager = WebSocketManager()
         manager._session_locks["test-123"] = asyncio.Lock()
-        
+
         lock = manager.get_lock("test-123")
         assert lock is manager._session_locks["test-123"]
 
@@ -235,9 +240,9 @@ class TestWebSocketManager:
         ws1 = MagicMock()
         ws2 = MagicMock()
         manager._active_connections = {"session1": ws1, "session2": ws2}
-        
+
         connections = manager.active_connections
-        
+
         assert connections == {"session1": ws1, "session2": ws2}
         # Should return a copy
         connections["session3"] = MagicMock()

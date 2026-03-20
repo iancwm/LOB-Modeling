@@ -1,7 +1,7 @@
 PYTHON = python3
 PIP = pip3
 
-.PHONY: install lint format check-format check-docstrings test clean run-kyle run-almgren run-glosten run-criscuolo
+.PHONY: install lint format check-format check-docstrings test coverage clean run-kyle run-almgren run-glosten run-criscuolo
 
 install:
 	$(PIP) install -r requirements.txt
@@ -33,7 +33,11 @@ check-docstrings:
 
 test:
 	@echo "Running tests..."
-	python3 -m unittest discover tests
+	python3 -m pytest tests/ -v
+
+coverage:
+	@echo "Running tests with coverage..."
+	python3 -m pytest tests/ --cov=src/lob_modeling --cov-report=html --cov-report=term-missing
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +

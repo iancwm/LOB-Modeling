@@ -1,12 +1,14 @@
 """Tests for the module registry."""
 
+from typing import Any, Dict, List
+
 import pytest
 
 from src.lob_modeling.webapp.modules.base import (
+    EducationalContent,
     ModelModule,
     ParameterSpec,
     SimulationResult,
-    EducationalContent,
     VisualizationSpec,
 )
 from src.lob_modeling.webapp.modules.registry import (
@@ -16,7 +18,6 @@ from src.lob_modeling.webapp.modules.registry import (
     register_module,
     registry,
 )
-from typing import Any, Dict, List
 
 
 class TestModuleRegistry:

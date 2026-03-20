@@ -12,9 +12,15 @@ This repository compiles a collection of fundamental market making models and ex
         *   `de_prado.py`: De Prado et al. (2012) - VPIN and optimal execution horizon
         *   `criscuolo_waehlbroeck.py`: Criscuolo & Waehlbroeck (2014) - Stochastic volatility optimal execution
         *   `asset_option.py`: Asset or Nothing Option pricing
+    *   `webapp/`: FastAPI-based web application for interactive model visualization.
+        *   `api/`: REST and WebSocket routers.
+        *   `modules/`: Model module registry and wrappers.
+        *   `session/`: Session management for WebSocket connections.
     *   `utils/`: Utility functions.
 *   `data/`: Sample data files.
 *   `tests/`: Unit tests.
+    *   `webapp/`: Webapp-specific tests.
+*   `frontend/`: React + TypeScript frontend (in development).
 
 ## Installation
 
@@ -44,11 +50,20 @@ This repository compiles a collection of fundamental market making models and ex
 *   statsmodels: Statistical modeling
 *   yfinance: Market data fetching
 
+**Webapp:**
+*   fastapi: Modern web framework for building APIs
+*   uvicorn: ASGI server for FastAPI
+*   websockets: WebSocket support for real-time updates
+*   httpx: Async HTTP client for testing
+
 **Development:**
 *   flake8: Code linting
 *   black: Code formatting
 *   isort: Import sorting
 *   pydocstyle: Docstring style checking
+*   pytest: Testing framework
+*   pytest-asyncio: Async test support
+*   pytest-cov: Coverage reporting
 
 ## Usage
 
@@ -115,6 +130,64 @@ model = AlmgrenChriss2000(
 opt_sale, inventory, expected_shortfall, variance_shortfall = model.basic_almgren(plot=True)
 ```
 
+### Web Application
+
+The repository includes a FastAPI-based web application for interactive visualization of market making models.
+
+**Starting the Backend:**
+
+```bash
+# From the project root
+uvicorn src.lob_modeling.webapp.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+The API will be available at `http://localhost:8000`.
+
+**API Endpoints:**
+
+- `GET /health` - Health check endpoint
+- `GET /models` - List all available models
+- `GET /models/{model_id}` - Get model metadata and parameters
+- `POST /models/{model_id}/simulate` - Run a single simulation
+- `POST /models/{model_id}/stream` - Create a WebSocket streaming session
+- `GET /api/dependencies` - Check dependency status
+
+**Interactive API Documentation:**
+
+FastAPI provides automatic interactive API documentation:
+- Swagger UI: `http://localhost:8000/docs`
+- ReDoc: `http://localhost:8000/redoc`
+
+**WebSocket Streaming:**
+
+The webapp supports real-time simulation updates via WebSocket:
+
+```python
+import websockets
+import asyncio
+
+async def stream_simulation():
+    async with websockets.connect("ws://localhost:8000/ws/session-id") as ws:
+        await ws.send({"type": "update_params", "payload": {"param": "value"}})
+        response = await ws.recv()
+        print(response)
+
+asyncio.run(stream_simulation())
+```
+
+**Running Tests:**
+
+```bash
+# Run all tests including webapp tests
+make test
+
+# Run only webapp tests
+pytest tests/webapp/ -v
+
+# Run with coverage
+pytest tests/ --cov=src/lob_modeling/webapp --cov-report=html
+```
+
 ## Models
 
 ### Kyle Model (1985)
@@ -164,14 +237,23 @@ make check-docstrings
 
 ### Testing
 
-Run unit tests with:
+Run all tests with pytest:
 ```bash
 make test
 ```
 
 Run tests with coverage:
 ```bash
-make coverage
+pytest tests/ --cov=src/lob_modeling --cov-report=html
+```
+
+Run specific test modules:
+```bash
+# Run only model tests
+pytest tests/test_models.py -v
+
+# Run only webapp tests
+pytest tests/webapp/ -v
 ```
 
 ### Running Models

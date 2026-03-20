@@ -8,9 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .api import rest as rest_router
 from .api import websocket as websocket_router
-from .session.store import InMemorySessionStore
 from .session.manager import WebSocketManager
-
+from .session.store import InMemorySessionStore
 
 # Global instances
 session_store: InMemorySessionStore | None = None
@@ -86,22 +85,21 @@ def create_app() -> FastAPI:
         """
         return {"status": "healthy"}
 
+    # Dependency injection for routers
+    @app.get("/api/dependencies")
+    async def get_dependencies() -> dict[str, bool]:
+        """Get dependency status.
+
+        Returns:
+            Dictionary with dependency status.
+        """
+        return {
+            "session_store": session_store is not None,
+            "ws_manager": ws_manager is not None,
+        }
+
     return app
 
 
 # Create application instance
 app = create_app()
-
-
-# Dependency injection for routers
-@app.get("/api/dependencies")
-async def get_dependencies() -> dict[str, bool]:
-    """Get dependency status.
-
-    Returns:
-        Dictionary with dependency status.
-    """
-    return {
-        "session_store": session_store is not None,
-        "ws_manager": ws_manager is not None,
-    }

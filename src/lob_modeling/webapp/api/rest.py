@@ -50,18 +50,17 @@ async def list_models() -> Dict[str, List[Dict[str, Any]]]:
     for model_id in list_modules():
         try:
             module = get_module(model_id)
-            models.append({
-                "id": module.model_id,
-                "displayName": module.display_name,
-                "description": module.description,
-                "parameters": {
-                    name: spec.to_dict()
-                    for name, spec in module.parameters.items()
-                },
-                "visualizations": [
-                    viz.to_dict() for viz in module.visualizations
-                ],
-            })
+            models.append(
+                {
+                    "id": module.model_id,
+                    "displayName": module.display_name,
+                    "description": module.description,
+                    "parameters": {
+                        name: spec.to_dict() for name, spec in module.parameters.items()
+                    },
+                    "visualizations": [viz.to_dict() for viz in module.visualizations],
+                }
+            )
         except Exception as e:
             # Skip models that fail to load
             continue
@@ -89,12 +88,9 @@ async def get_model(model_id: str) -> Dict[str, Any]:
             "displayName": module.display_name,
             "description": module.description,
             "parameters": {
-                name: spec.to_dict()
-                for name, spec in module.parameters.items()
+                name: spec.to_dict() for name, spec in module.parameters.items()
             },
-            "visualizations": [
-                viz.to_dict() for viz in module.visualizations
-            ],
+            "visualizations": [viz.to_dict() for viz in module.visualizations],
             "educationalContent": module.get_educational_content().to_dict(),
         }
     except KeyError:
@@ -102,9 +98,7 @@ async def get_model(model_id: str) -> Dict[str, Any]:
 
 
 @router.post("/{model_id}/simulate")
-async def simulate(
-    model_id: str, params: Dict[str, Any]
-) -> Dict[str, Any]:
+async def simulate(model_id: str, params: Dict[str, Any]) -> Dict[str, Any]:
     """Run a single simulation with provided parameters.
 
     Args:
@@ -131,9 +125,7 @@ async def simulate(
 
 
 @router.post("/{model_id}/stream")
-async def create_stream(
-    model_id: str, params: Dict[str, Any]
-) -> Dict[str, str]:
+async def create_stream(model_id: str, params: Dict[str, Any]) -> Dict[str, str]:
     """Initiate a WebSocket streaming session for real-time updates.
 
     Args:

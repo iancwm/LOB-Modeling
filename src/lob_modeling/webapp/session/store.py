@@ -1,7 +1,7 @@
 """In-memory session store with TTL-based expiration."""
 
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 
 
@@ -19,8 +19,8 @@ class SessionData:
         self.session_id = session_id
         self.model_id = model_id
         self.params = params
-        self.created_at = datetime.utcnow()
-        self.last_activity = datetime.utcnow()
+        self.created_at = datetime.now(timezone.utc)
+        self.last_activity = datetime.now(timezone.utc)
         self.result: Optional[Dict[str, Any]] = None
 
 
@@ -45,9 +45,10 @@ class InMemorySessionStore:
         """Background loop to remove expired sessions."""
         while True:
             await asyncio.sleep(60)  # Check every minute
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             expired = [
-                sid for sid, data in self._store.items()
+                sid
+                for sid, data in self._store.items()
                 if now - data.last_activity > self._ttl
             ]
             for sid in expired:
@@ -81,7 +82,7 @@ class InMemorySessionStore:
         """
         data = self._store.get(session_id)
         if data:
-            data.last_activity = datetime.utcnow()
+            data.last_activity = datetime.now(timezone.utc)
         return data
 
     def update_result(self, session_id: str, result: Dict[str, Any]) -> None:
@@ -93,7 +94,7 @@ class InMemorySessionStore:
         """
         if session_id in self._store:
             self._store[session_id].result = result
-            self._store[session_id].last_activity = datetime.utcnow()
+            self._store[session_id].last_activity = datetime.now(timezone.utc)
 
     def delete(self, session_id: str) -> None:
         """Delete a session.

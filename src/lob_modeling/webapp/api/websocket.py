@@ -6,8 +6,8 @@ from typing import Any, Dict
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from ..modules import get_module
-from ..session.store import InMemorySessionStore
 from ..session.manager import WebSocketManager
+from ..session.store import InMemorySessionStore
 
 router = APIRouter(tags=["websocket"])
 
@@ -107,7 +107,7 @@ async def websocket_endpoint(
     websocket: WebSocket,
     session_id: str,
 ) -> None:
-    """WebSocket endpoint for real-time simulation updates.
+    """Websocket endpoint for real-time simulation updates.
 
     Args:
         websocket: WebSocket connection.
@@ -123,10 +123,12 @@ async def websocket_endpoint(
             session = session_store.get(session_id)
 
             if not session:
-                await websocket.send_json({
-                    "type": "error",
-                    "payload": {"message": "Session not found or expired"},
-                })
+                await websocket.send_json(
+                    {
+                        "type": "error",
+                        "payload": {"message": "Session not found or expired"},
+                    }
+                )
                 break
 
             if data.get("type") == "update_params":

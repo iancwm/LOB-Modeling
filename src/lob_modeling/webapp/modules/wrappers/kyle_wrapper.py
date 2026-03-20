@@ -5,12 +5,14 @@ from pathlib import Path
 from typing import Any, Dict
 
 # Add src to path to import existing models
-src_path = Path(__file__).parent.parent.parent.parent
+# From: src/lob_modeling/webapp/modules/wrappers/kyle_wrapper.py
+# Need to add: src/ to sys.path
+src_path = Path(__file__).parent.parent.parent.parent.parent
 sys.path.insert(0, str(src_path))
 
-from lob_modeling.models.kyle import KyleModel as OriginalKyleModel
+from lob_modeling.models.kyle import KyleModel as OriginalKyleModel  # noqa: E402
 
-from ..base import (
+from ..base import (  # noqa: E402
     EducationalContent,
     ModelModule,
     ParameterSpec,
@@ -150,8 +152,14 @@ class KyleModelModule(ModelModule):
         }
 
         metrics = {
-            "final_price": time_series["market_price"][-1] if time_series["market_price"] else 0,
-            "price_variance": sum(result.get("SIGMA", [0])) / len(result.get("SIGMA", [1])) if result.get("SIGMA") else 0,
+            "final_price": (
+                time_series["market_price"][-1] if time_series["market_price"] else 0
+            ),
+            "price_variance": (
+                sum(result.get("SIGMA", [0])) / len(result.get("SIGMA", [1]))
+                if result.get("SIGMA")
+                else 0
+            ),
         }
 
         return SimulationResult(
