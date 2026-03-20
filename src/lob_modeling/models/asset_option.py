@@ -46,8 +46,8 @@ def asset_or_nothing_call(
 
     for moves in range(n + 1):
         for downfactors in range(moves + 1):
-            asset_option[downfactors, moves] = s * (u ** (moves - downfactors)) * (
-                d**downfactors
+            asset_option[downfactors, moves] = (
+                s * (u ** (moves - downfactors)) * (d**downfactors)
             )
 
     for moves in range(n - 1, -1, -1):

@@ -124,7 +124,9 @@ class Criscuolo2014:
                     x <= 0 for x in participation
                 ):
                     return 1e10
-                if any(x > 1 for x in share_turnover) or any(x > 1 for x in participation):
+                if any(x > 1 for x in share_turnover) or any(
+                    x > 1 for x in participation
+                ):
                     return 1e10
 
                 turnover_dif = np.diff(share_turnover, prepend=share_turnover[0])
@@ -148,10 +150,13 @@ class Criscuolo2014:
                                 (self.MU_1 / (self.MU_1 + self.MU_2))
                                 * (
                                     math.exp(
-                                        -1 * inst_time[k] * ((1 / self.MU_1) + (1 / self.MU_2))
+                                        -1
+                                        * inst_time[k]
+                                        * ((1 / self.MU_1) + (1 / self.MU_2))
                                     )
                                     - math.exp(
-                                        -1 * inst_time[k - 1]
+                                        -1
+                                        * inst_time[k - 1]
                                         * ((1 / self.MU_1) + (1 / self.MU_2))
                                     )
                                 )
@@ -163,7 +168,9 @@ class Criscuolo2014:
 
                 F_func = [
                     math.exp(-0.5 * (self.KAPPA * inst_time[k]))
-                    * math.sqrt((self.VOL_RATIO**2) - 1 + math.exp(self.KAPPA * inst_time[k]))
+                    * math.sqrt(
+                        (self.VOL_RATIO**2) - 1 + math.exp(self.KAPPA * inst_time[k])
+                    )
                     for k in range(0, len(share_turnover) - 1)
                 ]
 
@@ -171,13 +178,8 @@ class Criscuolo2014:
                 stochastic_vol = [
                     math.sqrt(self.THETA)
                     + ((3 * self.GAMMA) / (16 * self.KAPPA * math.sqrt(self.THETA)))
-                    + (
-                        (2 * math.sqrt(self.THETA)) / (self.KAPPA * inst_time_diff[k])
-                    )
-                    * (
-                        math.log((1 + F_func[k]) / (1 + F_func[k - 1]))
-                        - F_func_diff[k]
-                    )
+                    + ((2 * math.sqrt(self.THETA)) / (self.KAPPA * inst_time_diff[k]))
+                    * (math.log((1 + F_func[k]) / (1 + F_func[k - 1])) - F_func_diff[k])
                     + (
                         (2 * math.sqrt(self.THETA) * (self.GAMMA**2))
                         / (16 * (self.KAPPA**2) * F_func_diff[k] * self.THETA)
@@ -191,7 +193,11 @@ class Criscuolo2014:
                             )
                             - (
                                 ((self.VOL_RATIO**4) * F_func_diff[k])
-                                / (F_func[k] * F_func[k - 1] * (((self.VOL_RATIO**2) - 1) ** 2))
+                                / (
+                                    F_func[k]
+                                    * F_func[k - 1]
+                                    * (((self.VOL_RATIO**2) - 1) ** 2)
+                                )
                             )
                         )
                     )
@@ -208,9 +214,7 @@ class Criscuolo2014:
                         )
                         for k in range(0, len(share_turnover) - 1)
                     ]
-                ) + (
-                    (self.GAMMA * self.RHO) / (2 * trades[self.N - 1][0])
-                ) * (
+                ) + ((self.GAMMA * self.RHO) / (2 * trades[self.N - 1][0])) * (
                     self.KAPPA * trades[self.N - 1][0]
                     - np.sum(share_turnover[0 : self.N - 1])
                 )
@@ -226,7 +230,9 @@ class Criscuolo2014:
 
         initial_share_turnover = np.ones(self.N) / self.N
         initial_participation = 0.2 * np.ones(self.N)
-        initial_trades = np.column_stack([initial_share_turnover, initial_participation])
+        initial_trades = np.column_stack(
+            [initial_share_turnover, initial_participation]
+        )
 
         opt_sale = minimize(
             total_cost,

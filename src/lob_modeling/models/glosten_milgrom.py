@@ -74,42 +74,32 @@ class GlostenAndMilgromSimplest:
             buy_orders = sum([x if x > 0 else 0 for x in self.lob[0:n]])
             sell_orders = n - buy_orders
 
-            bid_numerator = (
-                self.V_low
-                * (((1 - self.BETA) ** buy_orders) * ((1 + self.BETA) ** (sell_orders + 1)))
-                + self.V_high
-                * (
-                    (1 - self.ALPHA)
-                    * ((1 + self.BETA) ** buy_orders)
-                    * ((1 - self.BETA) ** (sell_orders + 1))
-                )
-            )
-            bid_denominator = (
+            bid_numerator = self.V_low * (
+                ((1 - self.BETA) ** buy_orders) * ((1 + self.BETA) ** (sell_orders + 1))
+            ) + self.V_high * (
                 (1 - self.ALPHA)
                 * ((1 + self.BETA) ** buy_orders)
                 * ((1 - self.BETA) ** (sell_orders + 1))
-                + self.ALPHA
-                * ((1 - self.BETA) ** buy_orders)
-                * ((1 + self.BETA) ** (sell_orders + 1))
+            )
+            bid_denominator = (1 - self.ALPHA) * ((1 + self.BETA) ** buy_orders) * (
+                (1 - self.BETA) ** (sell_orders + 1)
+            ) + self.ALPHA * ((1 - self.BETA) ** buy_orders) * (
+                (1 + self.BETA) ** (sell_orders + 1)
             )
 
-            ask_numerator = (
-                self.V_low
-                * (((1 - self.BETA) ** (buy_orders + 1)) * ((1 + self.BETA) ** sell_orders))
-                + self.V_high
-                * (
-                    (1 - self.ALPHA)
-                    * ((1 + self.BETA) ** (buy_orders + 1))
-                    * ((1 - self.BETA) ** sell_orders)
-                )
-            )
-            ask_denominator = (
+            ask_numerator = self.V_low * (
+                ((1 - self.BETA) ** (buy_orders + 1)) * ((1 + self.BETA) ** sell_orders)
+            ) + self.V_high * (
                 (1 - self.ALPHA)
                 * ((1 + self.BETA) ** (buy_orders + 1))
                 * ((1 - self.BETA) ** sell_orders)
-                + self.ALPHA
-                * ((1 - self.BETA) ** (buy_orders + 1))
-                * ((1 + self.BETA) ** sell_orders)
+            )
+            ask_denominator = (1 - self.ALPHA) * (
+                (1 + self.BETA) ** (buy_orders + 1)
+            ) * ((1 - self.BETA) ** sell_orders) + self.ALPHA * (
+                (1 - self.BETA) ** (buy_orders + 1)
+            ) * (
+                (1 + self.BETA) ** sell_orders
             )
 
             self.bid.append(bid_numerator / bid_denominator)

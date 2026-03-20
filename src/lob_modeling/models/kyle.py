@@ -86,9 +86,7 @@ class KyleModel:
         print(f"Informed Trader Expected Profit: {informed_profit}")
         return {"MM Price": mm_price, "Informed Profit": informed_profit}
 
-    def multiperiod_price(
-        self, plot: bool = True
-    ) -> Dict[str, List[float]]:
+    def multiperiod_price(self, plot: bool = True) -> Dict[str, List[float]]:
         """Solve the multi-period Kyle model using difference equations.
 
         Computes optimal parameters and trader's expected profit as a function
@@ -118,9 +116,7 @@ class KyleModel:
         SIGMA = np.zeros(self.N + 1)
         price_changes = np.zeros(self.N + 1)
         informed_orders = np.zeros(self.N + 1)
-        noise_orders = np.random.normal(
-            0, (self.SIGMA**2) * (1 / self.N), self.N + 1
-        )
+        noise_orders = np.random.normal(0, (self.SIGMA**2) * (1 / self.N), self.N + 1)
         price_changes[0] = self.V_0
         informed_orders[0] = 0
         BETA[self.N] = 0
@@ -172,11 +168,17 @@ class KyleModel:
                 SIGMA[self.N] = 1e-8
             iter_count += 1
 
-        ALPHA[0] = (1 - (2 * BETA[0] * LAMBDA[0])) / (dT * ((2 * LAMBDA[0]) * (1 - (BETA[0] * LAMBDA[0]))))
+        ALPHA[0] = (1 - (2 * BETA[0] * LAMBDA[0])) / (
+            dT * ((2 * LAMBDA[0]) * (1 - (BETA[0] * LAMBDA[0])))
+        )
 
         for i in range(1, self.N):
-            informed_orders[i] = (BETA[i] * (self.V_N[0] - np.cumsum(price_changes[:i])[i - 1])) / self.N
-            price_changes[i + 1] = LAMBDA[i + 1] * (informed_orders[i] + noise_orders[i])
+            informed_orders[i] = (
+                BETA[i] * (self.V_N[0] - np.cumsum(price_changes[:i])[i - 1])
+            ) / self.N
+            price_changes[i + 1] = LAMBDA[i + 1] * (
+                informed_orders[i] + noise_orders[i]
+            )
 
         if plot:
             fig = go.Figure()

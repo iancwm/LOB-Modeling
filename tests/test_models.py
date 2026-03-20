@@ -1,6 +1,8 @@
 import unittest
-from src.lob_modeling.models.kyle import KyleModel
+
 from src.lob_modeling.models.almgren_chriss import AlmgrenChriss2000
+from src.lob_modeling.models.kyle import KyleModel
+
 
 class TestModels(unittest.TestCase):
     def test_kyle_init(self):
@@ -11,5 +13,6 @@ class TestModels(unittest.TestCase):
         model = AlmgrenChriss2000()
         self.assertIsNotNone(model)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

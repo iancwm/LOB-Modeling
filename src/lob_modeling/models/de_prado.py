@@ -13,13 +13,12 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
+import scipy.io as sio
 import yfinance as yf
 from plotly.subplots import make_subplots
 from scipy import stats
 from sklearn.metrics import mean_squared_error
 from statsmodels.tsa.ar_model import AutoReg
-
-import scipy.io as sio
 
 np.set_printoptions(threshold=sys.maxsize)
 
@@ -280,7 +279,7 @@ class DePrado2014:
                     mode="lines",
                     line_color="rgba(0,0,0,0)",
                     fillcolor=f"rgba(0, 50, 200, {0.1 + i * 0.05})",
-                    name=f"Band {i+1}",
+                    name=f"Band {i + 1}",
                     showlegend=False,
                     hoverinfo="skip",
                 ),
@@ -507,9 +506,7 @@ class DePrado2014:
             * (self.EPSILON**X)
         ) / (math.factorial(X) * math.factorial(Y))
         prob_no_news = (
-            (1 - self.ALPHA)
-            * math.exp(-2 * self.EPSILON)
-            * (self.EPSILON ** (X + Y))
+            (1 - self.ALPHA) * math.exp(-2 * self.EPSILON) * (self.EPSILON ** (X + Y))
         ) / (math.factorial(X) * math.factorial(Y))
         prob = prob_good_news + prob_bad_news + prob_no_news
         return prob
@@ -548,7 +545,9 @@ class DePrado2014:
         """
         total_volume = self.tick_data["Volume"].sum()
         volume_bucket_size = total_volume / self.n
-        price_change = np.diff(self.tick_data["Price"], prepend=self.tick_data["Price"][0])
+        price_change = np.diff(
+            self.tick_data["Price"], prepend=self.tick_data["Price"][0]
+        )
         price_deviation = np.std(price_change)
         buy_volume_buckets = []
         sell_volume_buckets = []
@@ -565,10 +564,9 @@ class DePrado2014:
             else:
                 price_change_val = P_i[-1] - P_i[0]
                 price_changes_list.append(price_change_val)
-                buy_volume = (
-                    sum(v_i[0:-1])
-                    * stats.norm.cdf(price_change_val / price_deviation)  # type: ignore
-                )
+                buy_volume = sum(v_i[0:-1]) * stats.norm.cdf(
+                    price_change_val / price_deviation
+                )  # type: ignore
                 sell_volume = sum(v_i[0:-1]) - buy_volume
                 total_volume_list.append(sum(v_i[0:-1]))
                 buy_volume_buckets.append(buy_volume)
@@ -606,9 +604,7 @@ class DePrado2014:
         fig.show()
         return buy_volume_buckets, sell_volume_buckets
 
-    def VPIN(
-        self, buy_buckets: List[float], sell_buckets: List[float]
-    ) -> np.ndarray:
+    def VPIN(self, buy_buckets: List[float], sell_buckets: List[float]) -> np.ndarray:
         """Calculate Volume-synchronized Probability of Informed Trading (VPIN).
 
         Args:
@@ -623,7 +619,9 @@ class DePrado2014:
         cumulative_volume = np.cumsum(
             [buy_buckets[i] + sell_buckets[i] for i in range(len(buy_buckets))]
         )
-        weighted_vol = np.array([i * cumulative_volume[i] for i in range(len(cumulative_volume))])
+        weighted_vol = np.array(
+            [i * cumulative_volume[i] for i in range(len(cumulative_volume))]
+        )
         VPIN = cumulative_oi[1:] / weighted_vol[1:]
 
         fig = go.Figure()

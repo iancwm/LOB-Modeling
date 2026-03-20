@@ -173,9 +173,7 @@ class AlmgrenChriss2000:
 
         for step in range(self.N - 2, -1, -1):
             for x in range(self.X + 1):
-                best_value = value_func[step + 1, 0] * np.exp(
-                    self.hamiltonian(x, x)
-                )
+                best_value = value_func[step + 1, 0] * np.exp(self.hamiltonian(x, x))
                 best_n = x
 
                 for n in range(x):
