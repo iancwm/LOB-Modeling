@@ -1,20 +1,55 @@
+"""Kyle Model (1985) - Single dealer model with asymmetric information.
+
+This module implements the Kyle model of insider trading, where an informed
+trader interacts with a market maker and noise traders in a limit order book.
+"""
+
 import math
+from typing import Any, Dict, List
+
 import numpy as np
 import plotly.graph_objects as go
 
 
 class KyleModel:
-    def __init__(self, V_0=5, V_N=5, SIGMA_G=0.4, SIGMA_T=0.2, SIGMA=2, ERR=0.05, N=50, MAX_ITER=100):
-        """
-        one MM, one Informed, many Noise
-        :param V_0: security value initially
-        :param V_N: ending value of security (true)
-        :param SIGMA_G: volatlity of security guess at time N
-        :param SIGMA_T: true variance of security at time 0
-        :param SIGMA: variance of net order flow of noise traders
-        :param ERR: error rate willing to allow for true vs numerically solved for SIGMA at time 0
-        :param N: discretized time periods for multiperiod model
-        :param MAX_ITER: max iterations allowed for getting SIGMA[0]
+    """Kyle Model for market making with asymmetric information.
+
+    The model features a single market maker, one informed trader, and many
+    noise traders. The market maker sets prices based on observed order flow.
+
+    Attributes:
+        V_0: Initial security value.
+        V_N: True ending value of security (randomly generated).
+        SIGMA_G: Volatility of security guess at time N.
+        SIGMA_T: True variance of security at time 0.
+        SIGMA: Variance of net order flow of noise traders.
+        ERR: Error tolerance for numerical solution of SIGMA[0].
+        N: Number of discretized time periods.
+        MAX_ITER: Maximum iterations for SIGMA[0] convergence.
+    """
+
+    def __init__(
+        self,
+        V_0: float = 5,
+        V_N: float = 5,
+        SIGMA_G: float = 0.4,
+        SIGMA_T: float = 0.2,
+        SIGMA: float = 2,
+        ERR: float = 0.05,
+        N: int = 50,
+        MAX_ITER: int = 100,
+    ) -> None:
+        """Initialize the Kyle Model with specified parameters.
+
+        Args:
+            V_0: Initial security value. Defaults to 5.
+            V_N: True ending value of security. Defaults to 5.
+            SIGMA_G: Volatility of security guess at time N. Defaults to 0.4.
+            SIGMA_T: True variance of security at time 0. Defaults to 0.2.
+            SIGMA: Variance of net order flow of noise traders. Defaults to 2.
+            ERR: Error tolerance for numerical solution. Defaults to 0.05.
+            N: Number of discretized time periods. Defaults to 50.
+            MAX_ITER: Maximum iterations for convergence. Defaults to 100.
         """
         self.V_0 = float(V_0)
         self.SIGMA_G = float(SIGMA_G)
@@ -25,33 +60,57 @@ class KyleModel:
         self.MAX_ITER = MAX_ITER
         self.V_N = np.random.normal(self.V_0, self.SIGMA_G, 1)
 
-    def one_period_price(self):
-        """
-        one-time period model calculates expected price MM sets after
-        seeing the LOB (informed order + noise orders), this is just a conditional
-        expectation and simplifies nicely to the formula below for MM_price &
-        informed trader profit after time period
-        :return: MM price + expected trader profit
+    def one_period_price(self) -> Dict[str, float]:
+        """Calculate the one-period Kyle model equilibrium.
+
+        Computes the market maker's expected price after observing the limit
+        order book (informed order + noise orders), and the informed trader's
+        expected profit.
+
+        Returns:
+            A dictionary containing:
+                - 'MM Price': Market maker's price after observing order flow.
+                - 'Informed Profit': Expected profit of the informed trader.
         """
         ALPHA = self.V_0 * (self.SIGMA / math.sqrt(self.SIGMA_G))
         BETA = self.SIGMA / math.sqrt(self.SIGMA_G)
-        # MU = self.V_0 # Unused
-        # LAMBDA = math.sqrt(self.SIGMA_G) / (2 * self.SIGMA) # Unused
         informed_order = (BETA * self.V_N) + ALPHA
         net_order = informed_order + np.random.normal(0, self.SIGMA, 1)
-        mm_price = (((math.sqrt(self.SIGMA_G) / (2 * self.SIGMA)) * net_order) + self.V_0)[0]
-        informed_profit = ((((self.V_N - self.V_0) ** 2) * self.SIGMA) / (2 * math.sqrt(self.SIGMA_G)))[0]
-        print(f'Market Maker Price: {mm_price}')
-        print(f'Informed Trader Expected Profit: {informed_profit}')
-        return {'MM Price': mm_price, 'Informed Profit': informed_profit}
+        mm_price = (
+            ((math.sqrt(self.SIGMA_G) / (2 * self.SIGMA)) * net_order) + self.V_0
+        )[0]
+        informed_profit = (
+            (((self.V_N - self.V_0) ** 2) * self.SIGMA) / (2 * math.sqrt(self.SIGMA_G))
+        )[0]
+        print(f"Market Maker Price: {mm_price}")
+        print(f"Informed Trader Expected Profit: {informed_profit}")
+        return {"MM Price": mm_price, "Informed Profit": informed_profit}
 
-    def multiperiod_price(self, plot=True):
-        """
-        Solving the difference equations to find the optimal params and trader's expected profit as a function of time.
-        :return: arrays of params that tell us trader position size, uninformed size, price change, volatility movement, and profit
+    def multiperiod_price(
+        self, plot: bool = True
+    ) -> Dict[str, List[float]]:
+        """Solve the multi-period Kyle model using difference equations.
+
+        Computes optimal parameters and trader's expected profit as a function
+        of time by solving the system of difference equations backwards from
+        the final period.
+
+        Args:
+            plot: If True, creates an interactive Plotly visualization of
+                order sizes. Defaults to True.
+
+        Returns:
+            A dictionary containing arrays of:
+                - 'ALPHA': Trader position size parameters.
+                - 'BETA': Uninformed trader size parameters.
+                - 'DELTA': Price change parameters.
+                - 'LAMBDA': Volatility movement parameters.
+                - 'SIGMA': Volatility parameters over time.
+                - 'price_changes': Price changes at each period.
+                - 'informed_orders': Informed trader orders.
+                - 'noise_orders': Noise trader orders.
         """
         dT = 1 / self.N
-        # MM_prices = np.zeros(self.N+1) # Unused
         ALPHA = np.zeros(self.N + 1)
         BETA = np.zeros(self.N + 1)
         DELTA = np.zeros(self.N + 1)
@@ -59,8 +118,9 @@ class KyleModel:
         SIGMA = np.zeros(self.N + 1)
         price_changes = np.zeros(self.N + 1)
         informed_orders = np.zeros(self.N + 1)
-        # Fix syntax error: 1 \ self.N -> 1 / self.N
-        noise_orders = np.random.normal(0, (self.SIGMA ** 2) * (1 / self.N), self.N + 1)
+        noise_orders = np.random.normal(
+            0, (self.SIGMA**2) * (1 / self.N), self.N + 1
+        )
         price_changes[0] = self.V_0
         informed_orders[0] = 0
         BETA[self.N] = 0
@@ -68,118 +128,97 @@ class KyleModel:
         SIGMA[self.N] = self.SIGMA_G
         LAMBDA[self.N] = math.sqrt(SIGMA[self.N]) / (self.SIGMA * math.sqrt(2 * dT))
         price_changes[self.N] = LAMBDA[self.N] * noise_orders[self.N]
-        
-        # Initialization for tracking iterations if needed
-        # (plotly visualization happens at the end)
-            
+
         iter_count = 0
 
-        while (abs(SIGMA[0] - self.SIGMA_T) > self.ERR) and (iter_count < self.MAX_ITER):
-
+        while (abs(SIGMA[0] - self.SIGMA_T) > self.ERR) and (
+            iter_count < self.MAX_ITER
+        ):
             for n in range(self.N, 0, -1):
-
-                ALPHA[n] = (LAMBDA[n] * (self.SIGMA ** 2)) / SIGMA[n]
+                ALPHA[n] = (LAMBDA[n] * (self.SIGMA**2)) / SIGMA[n]
                 denominator = 1 - (ALPHA[n] * LAMBDA[n] * dT)
-                
-                # Avoid numerical issues with very small denominators
+
                 if abs(denominator) < 1e-10:
                     SIGMA[n - 1] = SIGMA[n]
                 else:
                     SIGMA[n - 1] = SIGMA[n] / denominator
-                
+
                 BETA[n - 1] = 1 / (4 * LAMBDA[n] * (1 - (BETA[n] * LAMBDA[n])))
 
-                # Ensure SIGMA values stay positive and above a minimum threshold
                 if SIGMA[n - 1] < 1e-8:
                     SIGMA[n - 1] = 1e-8
 
                 lambda_coeffs = [
-                    ((self.SIGMA ** 2) * BETA[n] * dT) / SIGMA[n],
-                    -((self.SIGMA ** 2) * dT) / SIGMA[n],
+                    ((self.SIGMA**2) * BETA[n] * dT) / SIGMA[n],
+                    -((self.SIGMA**2) * dT) / SIGMA[n],
                     -BETA[n],
-                    0.5
+                    0.5,
                 ]
-                
-                # Check for NaN or inf in coefficients
+
                 if np.any(~np.isfinite(lambda_coeffs)):
-                    lambda_roots = np.array([0.1])  # Use a default value if coefficients are invalid
+                    lambda_roots = np.array([0.1])
                 else:
                     lambda_roots = np.roots(lambda_coeffs)
 
                 if len(lambda_roots) < 3:
                     LAMBDA[n - 1] = max(lambda_roots)
-
                 else:
                     LAMBDA[n - 1] = np.median(lambda_roots)
 
                 DELTA[n - 1] = 1 / (4 * LAMBDA[n] * (1 - (BETA[n] * LAMBDA[n])))
 
-            # plot convergence of the sigma (only plot one of the graphs each run - hence commented out)
-            '''
-            plt.scatter(iter, SIGMA[1] - self.SIGMA_T)
-            plt.title('Convergence of Intial Volatility of V (SIGMA[0])')
-            plt.xlabel('Iterations')
-            plt.ylabel('SIGMA[0] - True Initial Vol')
-            plt.show()
-            plt.pause(0.0001)
-            '''
             SIGMA[self.N] -= 0.007
-            # Ensure SIGMA[self.N] doesn't go below a minimum threshold
             if SIGMA[self.N] < 1e-8:
                 SIGMA[self.N] = 1e-8
             iter_count += 1
 
-        # Create interactive visualization if plot=True
         ALPHA[0] = (1 - (2 * BETA[0] * LAMBDA[0])) / (dT * ((2 * LAMBDA[0]) * (1 - (BETA[0] * LAMBDA[0]))))
 
-        # functions for noise trader order & uninformed order sizes, price change, and future profit
-        # noise_cumulative = np.cumsum(noise_orders) # Unused
         for i in range(1, self.N):
             informed_orders[i] = (BETA[i] * (self.V_N[0] - np.cumsum(price_changes[:i])[i - 1])) / self.N
             price_changes[i + 1] = LAMBDA[i + 1] * (informed_orders[i] + noise_orders[i])
 
         if plot:
             fig = go.Figure()
-            
-            # Add traces for informed and noise orders
+
             fig.add_trace(
                 go.Scatter(
                     x=np.arange(self.N + 1),
                     y=np.cumsum(informed_orders),
-                    mode='lines',
-                    name='Informed Orders',
-                    line=dict(color='blue', width=2)
+                    mode="lines",
+                    name="Informed Orders",
+                    line=dict(color="blue", width=2),
                 )
             )
-            
+
             fig.add_trace(
                 go.Scatter(
                     x=np.arange(self.N + 1),
                     y=np.cumsum(noise_orders),
-                    mode='lines',
-                    name='Noise Orders',
-                    line=dict(color='orange', width=2)
+                    mode="lines",
+                    name="Noise Orders",
+                    line=dict(color="orange", width=2),
                 )
             )
-            
+
             fig.update_layout(
-                title='Order Sizes of Market Participants',
-                xaxis_title='Time',
-                yaxis_title='Order Size',
-                hovermode='x unified',
-                template='plotly_white',
-                height=600
+                title="Order Sizes of Market Participants",
+                xaxis_title="Time",
+                yaxis_title="Order Size",
+                hovermode="x unified",
+                template="plotly_white",
+                height=600,
             )
-            
+
             fig.show()
 
         return {
-            'ALPHA': ALPHA,
-            'BETA': BETA,
-            'DELTA': DELTA,
-            'LAMBDA': LAMBDA,
-            'SIGMA': SIGMA,
-            'price_changes': price_changes,
-            'informed_orders': informed_orders,
-            'noise_orders': noise_orders
+            "ALPHA": ALPHA,
+            "BETA": BETA,
+            "DELTA": DELTA,
+            "LAMBDA": LAMBDA,
+            "SIGMA": SIGMA,
+            "price_changes": price_changes,
+            "informed_orders": informed_orders,
+            "noise_orders": noise_orders,
         }
