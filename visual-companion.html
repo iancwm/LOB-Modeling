@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOB Modeling Webapp - Brainstorming Companion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #eee;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            color: #888;
+            font-size: 1.1rem;
+        }
+        
+        .slides {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        
+        .slide {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .slide h2 {
+            color: #00d9ff;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        .slide-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: #00d9ff;
+        }
+        
+        .card h3 {
+            color: #00ff88;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .card p {
+            color: #aaa;
+            line-height: 1.6;
+        }
+        
+        .diagram {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .diagram-box {
+            display: inline-block;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #00d9ff22, #00ff8822);
+            border: 2px solid #00d9ff;
+            border-radius: 8px;
+            margin: 10px;
+            font-weight: bold;
+        }
+        
+        .arrow {
+            font-size: 1.5rem;
+            color: #00d9ff;
+            margin: 10px;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(0,217,255,0.05);
+            border-radius: 6px;
+            border-left: 3px solid #00d9ff;
+        }
+        
+        .feature-icon {
+            font-size: 1.5rem;
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .tech-badge {
+            padding: 8px 16px;
+            background: rgba(0,255,136,0.1);
+            border: 1px solid #00ff88;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #00ff88;
+        }
+        
+        .comparison {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .comparison-col {
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .comparison-col h3 {
+            color: #00d9ff;
+            margin-bottom: 15px;
+        }
+        
+        .comparison-col ul {
+            text-align: left;
+            padding-left: 20px;
+        }
+        
+        .comparison-col li {
+            margin-bottom: 8px;
+            color: #aaa;
+        }
+        
+        .highlight {
+            color: #00ff88;
+            font-weight: bold;
+        }
+        
+        .status-bar {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 15px 25px;
+            border-radius: 8px;
+            border: 1px solid #00d9ff;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 LOB Modeling Webapp</h1>
+            <p class="subtitle">Production-Ready Visualization Platform for Market Making Algorithms</p>
+        </header>
+        
+        <div class="slides">
+            <!-- Slide 1: Current State -->
+            <div class="slide">
+                <h2>📊 Current State</h2>
+                <div class="slide-content">
+                    <div class="card">
+                        <h3>📁 Existing Assets</h3>
+                        <p>6 core market making models (Kyle, Almgren-Chriss, Glosten-Milgrom, De Prado, Criscuolo, Asset Option)</p>
+                    </div>
+                    <div class="card">
+                        <h3>📓 Jupyter Notebooks</h3>
+                        <p>Example notebooks with visualizations for each model</p>
+                    </div>
+                    <div class="card">
+                        <h3>🐍 Python API</h3>
+                        <p>Clean Python interface for programmatic access</p>
+                    </div>
+                    <div class="card">
+                        <h3>📊 CLI Commands</h3>
+                        <p>Makefile-based execution for quick testing</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 2: Vision -->
+            <div class="slide">
+                <h2>🚀 Vision: Production Webapp</h2>
+                <div class="diagram">
+                    <div class="diagram-box">Current: Python Scripts + Notebooks</div>
+                    <div class="arrow">→</div>
+                    <div class="diagram-box" style="border-color: #00ff88;">Target: Interactive Web Platform</div>
+                </div>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <span class="feature-icon">🎨</span>
+                        <span>Interactive visualizations with real-time updates</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">⚙️</span>
+                        <span>Parameter tuning with instant feedback</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📈</span>
+                        <span>Side-by-side model comparisons</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">💾</span>
+                        <span>Save/load configurations and results</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🔌</span>
+                        <span>Live market data integration</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📤</span>
+                        <span>Export reports and visualizations</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 3: Architecture Options -->
+            <h2>🏗️ Architecture Approaches</h2>
+            <div class="comparison">
+                <div class="comparison-col">
+                    <h3>Option A: Streamlit</h3>
+                    <ul>
+                        <li><span class="highlight">✓</span> Fastest to prototype</li>
+                        <li><span class="highlight">✓</span> Python-native (no JS needed)</li>
+                        <li><span class="highlight">✓</span> Built-in Plotly support</li>
+                        <li>✗ Limited customization</li>
+                        <li>✗ Less "production" feel</li>
+                        <li>✗ Scaling challenges</li>
+                    </ul>
+                </div>
+                <div class="comparison-col">
+                    <h3>Option B: FastAPI + React</h3>
+                    <ul>
+                        <li><span class="highlight">✓</span> Full production stack</li>
+                        <li><span class="highlight">✓</span> Maximum flexibility</li>
+                        <li><span class="highlight">✓</span> Modern UX patterns</li>
+                        <li>✗ Higher development effort</li>
+                        <li>✗ Two codebases (Python + JS)</li>
+                        <li>✗ More deployment complexity</li>
+                    </ul>
+                </div>
+                <div class="comparison-col">
+                    <h3>Option C: Plotly Dash</h3>
+                    <ul>
+                        <li><span class="highlight">✓</span> Python-native</li>
+                        <li><span class="highlight">✓</span> Enterprise-ready</li>
+                        <li><span class="highlight">✓</span> Rich interactivity</li>
+                        <li>✗ Steeper learning curve</li>
+                        <li>✗ Less modern UI feel</li>
+                        <li>✗ Vendor lock-in</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="status-bar">
+        🟢 Visual Companion Active — Refresh to see updates
+    </div>
+</body>
+</html>
