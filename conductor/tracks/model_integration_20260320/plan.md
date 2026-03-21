@@ -51,22 +51,22 @@
     - [x] Verify visualizations render correctly
 - [x] Task: Conductor - User Manual Verification 'Phase 3: De Prado Model Integration' (Protocol in workflow.md) (SHA: 3f2d2ba)
 
-## Phase 4: Criscuolo-Waehlbroeck Model Integration
-- [ ] Task: Create Criscuolo-Waehlbroeck wrapper
-    - [ ] Create `modules/wrappers/criscuolo_waehlbroeck_wrapper.py`
-    - [ ] Implement model_id, display_name, description
-    - [ ] Define parameters (volatility, impact, inventory)
-    - [ ] Implement simulate() method
-    - [ ] Define visualizations (execution schedule, volatility path)
-    - [ ] Add educational content
-- [ ] Task: Register Criscuolo-Waehlbroeck module
-    - [ ] Import in `modules/__init__.py`
-    - [ ] Register with registry
-- [ ] Task: Test Criscuolo-Waehlbroeck integration
-    - [ ] Test via API endpoint
-    - [ ] Test via webapp UI
-    - [ ] Verify visualizations render correctly
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Criscuolo-Waehlbroeck Model Integration' (Protocol in workflow.md)
+## Phase 4: Criscuolo-Waehlbroeck Model Integration [checkpoint: eebdd8e]
+- [x] Task: Create Criscuolo-Waehlbroeck wrapper
+    - [x] Create `modules/wrappers/criscuolo_waehlbroeck_wrapper.py`
+    - [x] Implement model_id, display_name, description
+    - [x] Define parameters (volatility, impact, inventory)
+    - [x] Implement simulate() method
+    - [x] Define visualizations (execution schedule, volatility path)
+    - [x] Add educational content
+- [x] Task: Register Criscuolo-Waehlbroeck module
+    - [x] Import in `modules/__init__.py`
+    - [x] Register with registry
+- [x] Task: Test Criscuolo-Waehlbroeck integration
+    - [x] Test via API endpoint
+    - [x] Test via webapp UI
+    - [x] Verify visualizations render correctly
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Criscuolo-Waehlbroeck Model Integration' (Protocol in workflow.md) (SHA: eebdd8e)
 
 ## Phase 5: Asset Option Model Integration
 - [ ] Task: Create Asset Option wrapper
