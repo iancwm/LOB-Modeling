@@ -96,8 +96,8 @@
     - [x] Test model comparison with all models (SHA: 22df373)
     - [x] Test parameter validation for all models (SHA: 22df373)
     - [x] Test error handling for edge cases (SHA: 22df373)
-- [~] Task: Documentation updates
-    - [~] Update README with new model list
-    - [ ] Verify all docstrings are complete
-    - [ ] Add model integration notes
-- [ ] Task: Conductor - User Manual Verification 'Phase 6: Testing and Polish' (Protocol in workflow.md)
+- [x] Task: Documentation updates
+    - [x] Update README with new model list (SHA: 549e896)
+    - [x] Verify all docstrings are complete (SHA: 549e896)
+    - [x] Add model integration notes (SHA: 549e896)
+- [~] Task: Conductor - User Manual Verification 'Phase 6: Testing and Polish' (Protocol in workflow.md)
