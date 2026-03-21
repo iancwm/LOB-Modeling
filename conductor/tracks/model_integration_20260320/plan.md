@@ -1,21 +1,21 @@
 # Implementation Plan: Webapp Model Integration - All Models
 
-## Phase 1: Almgren-Chriss Model Integration
-- [ ] Task: Create Almgren-Chriss wrapper
-    - [ ] Create `modules/wrappers/almgren_chriss_wrapper.py`
-    - [ ] Implement model_id, display_name, description
-    - [ ] Define parameters (ALPHA, ETA, GAMMA, LAMBDA, SIGMA, N, T, X)
-    - [ ] Implement simulate() method
-    - [ ] Define visualizations (inventory decay, cost distribution)
-    - [ ] Add educational content
-- [ ] Task: Register Almgren-Chriss module
-    - [ ] Import in `modules/__init__.py`
-    - [ ] Register with registry
-- [ ] Task: Test Almgren-Chriss integration
-    - [ ] Test via API endpoint
-    - [ ] Test via webapp UI
-    - [ ] Verify visualizations render correctly
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Almgren-Chriss Model Integration' (Protocol in workflow.md)
+## Phase 1: Almgren-Chriss Model Integration [checkpoint: 4832c7a]
+- [x] Task: Create Almgren-Chriss wrapper
+    - [x] Create `modules/wrappers/almgren_chriss_wrapper.py`
+    - [x] Implement model_id, display_name, description
+    - [x] Define parameters (ALPHA, ETA, GAMMA, LAMBDA, SIGMA, N, T, X)
+    - [x] Implement simulate() method
+    - [x] Define visualizations (inventory decay, trade schedule)
+    - [x] Add educational content
+- [x] Task: Register Almgren-Chriss module
+    - [x] Import in `modules/__init__.py`
+    - [x] Register with registry
+- [x] Task: Test Almgren-Chriss integration
+    - [x] Test via API endpoint
+    - [x] Test via webapp UI
+    - [x] Verify visualizations render correctly
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Almgren-Chriss Model Integration' (Protocol in workflow.md) (SHA: 4832c7a)
 
 ## Phase 2: Glosten-Milgrom Model Integration
 - [ ] Task: Create Glosten-Milgrom wrapper
