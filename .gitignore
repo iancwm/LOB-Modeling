@@ -1,8 +1,34 @@
+# Python
 .crush
 venv
-src/lob_modeling/__pycache__
+__pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Coverage
+.coverage
+htmlcov/
+*.coverage
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Frontend
 frontend/
 node_modules/
-src/lob_modeling/webapp/api/__pycache__
-src/lob_modeling/webapp/modules/wrappers/__pycache__
+
+# Environment
+.env
+.venv
+
+# Build
+dist/
+build/
+*.egg-info/
