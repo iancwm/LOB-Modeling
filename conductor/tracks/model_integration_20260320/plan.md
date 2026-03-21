@@ -92,12 +92,12 @@
     - [x] Test De Prado wrapper (SHA: 4549539)
     - [x] Test Criscuolo-Waehlbroeck wrapper (SHA: 4549539)
     - [x] Test Asset Option wrapper (SHA: 4549539)
-- [~] Task: Integration testing
-    - [~] Test model comparison with all models
-    - [ ] Test parameter validation for all models
-    - [ ] Test error handling for edge cases
-- [ ] Task: Documentation updates
-    - [ ] Update README with new model list
+- [x] Task: Integration testing
+    - [x] Test model comparison with all models (SHA: 22df373)
+    - [x] Test parameter validation for all models (SHA: 22df373)
+    - [x] Test error handling for edge cases (SHA: 22df373)
+- [~] Task: Documentation updates
+    - [~] Update README with new model list
     - [ ] Verify all docstrings are complete
     - [ ] Add model integration notes
 - [ ] Task: Conductor - User Manual Verification 'Phase 6: Testing and Polish' (Protocol in workflow.md)
