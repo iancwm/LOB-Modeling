@@ -15,11 +15,24 @@ This repository compiles a collection of fundamental market making models and ex
     *   `webapp/`: FastAPI-based web application for interactive model visualization.
         *   `api/`: REST and WebSocket routers.
         *   `modules/`: Model module registry and wrappers.
+            *   `base.py`: Base interface for all model modules
+            *   `registry.py`: Module discovery and registration
+            *   `wrappers/`: Model wrappers for webapp integration
+                *   `kyle_wrapper.py`: Kyle Model wrapper
+                *   `almgren_chriss_wrapper.py`: Almgren-Chriss wrapper
+                *   `glosten_milgrom_wrapper.py`: Glosten-Milgrom wrapper
+                *   `de_prado_wrapper.py`: De Prado VPIN wrapper
+                *   `criscuolo_waehlbroeck_wrapper.py`: Criscuolo-Waehlbroeck wrapper
+                *   `asset_option_wrapper.py`: Asset Option wrapper
         *   `session/`: Session management for WebSocket connections.
     *   `utils/`: Utility functions.
 *   `data/`: Sample data files.
 *   `tests/`: Unit tests.
     *   `webapp/`: Webapp-specific tests.
+        *   `test_modules.py`: Tests for base module classes
+        *   `test_registry.py`: Tests for module registry
+        *   `test_integration.py`: Integration tests for all model wrappers
+        *   `test_*_wrapper.py`: Individual wrapper tests for each model
 *   `frontend/`: React + TypeScript frontend (in development).
 
 ## Installation
@@ -271,14 +284,28 @@ See all available commands: `just --list`
 
 ## Models
 
+All models are available both as standalone Python classes and as webapp modules with interactive visualizations.
+
 ### Kyle Model (1985)
 Features single period and multiperiod versions of the discretized Kyle model. Computes parameters for determining agent order flow at each time period. The model demonstrates how informed traders balance profit against information revelation.
+
+**Webapp Visualizations:**
+- Price Discovery Over Time
+- Order Flow Dynamics
 
 ### Almgren-Chriss (2000)
 Optimal execution model deviating from the seminal work of Almgren & Chriss (2000). Includes both dynamic programming (Bellman equation) and quadratic programming solutions for optimal trade execution with linear impact costs.
 
+**Webapp Visualizations:**
+- Inventory Decay Over Time
+- Optimal Trade Schedule
+
 ### Glosten-Milgrom (1985)
 Simplified specialist market model that uses Bayesian updating to compute expected bid and ask prices based on observed order flow. Demonstrates how market makers learn from trades.
+
+**Webapp Visualizations:**
+- Bid-Ask Spread Evolution
+- Spread Width Over Time
 
 ### De Prado et al. (2012)
 Implements the De Prado framework for optimal execution horizon, including:
@@ -286,6 +313,10 @@ Implements the De Prado framework for optimal execution horizon, including:
 - BVC (Bulk Volume Classification)
 - LOBSTER data integration
 - Autoregressive order imbalance modeling
+
+**Webapp Visualizations:**
+- VPIN Evolution Over Time
+- Order Imbalance
 
 ### Criscuolo & Waehlbroeck (2014)
 Implements the stochastic volatility optimal execution model. The model captures realistic market conditions by incorporating:
@@ -296,8 +327,16 @@ Implements the stochastic volatility optimal execution model. The model captures
 
 The execution schedule minimizes total cost while accounting for volatility dynamics. See `criscuolo_waehlbroeck_example.ipynb` for a complete walkthrough with visualizations.
 
+**Webapp Visualizations:**
+- Stochastic Volatility Path
+- Optimal Execution Schedule
+
 ### Asset or Nothing Option
 Binomial tree pricing model for asset or nothing call options. Pays the asset value if the asset price exceeds the strike at expiry.
+
+**Webapp Visualizations:**
+- Binomial Tree - Option Values
+- Asset Price Paths
 
 ## Development
 
