@@ -34,22 +34,22 @@
     - [x] Verify visualizations render correctly
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Glosten-Milgrom Model Integration' (Protocol in workflow.md) (SHA: 7f1908f)
 
-## Phase 3: De Prado Model Integration
-- [ ] Task: Create De Prado wrapper
-    - [ ] Create `modules/wrappers/de_prado_wrapper.py`
-    - [ ] Implement model_id, display_name, description
-    - [ ] Define parameters for VPIN calculation
-    - [ ] Implement simulate() method
-    - [ ] Define visualizations (VPIN over time, order imbalance)
-    - [ ] Add educational content
-- [ ] Task: Register De Prado module
-    - [ ] Import in `modules/__init__.py`
-    - [ ] Register with registry
-- [ ] Task: Test De Prado integration
-    - [ ] Test via API endpoint
-    - [ ] Test via webapp UI
-    - [ ] Verify visualizations render correctly
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: De Prado Model Integration' (Protocol in workflow.md)
+## Phase 3: De Prado Model Integration [checkpoint: 3f2d2ba]
+- [x] Task: Create De Prado wrapper
+    - [x] Create `modules/wrappers/de_prado_wrapper.py`
+    - [x] Implement model_id, display_name, description
+    - [x] Define parameters for VPIN calculation
+    - [x] Implement simulate() method
+    - [x] Define visualizations (VPIN over time, order imbalance)
+    - [x] Add educational content
+- [x] Task: Register De Prado module
+    - [x] Import in `modules/__init__.py`
+    - [x] Register with registry
+- [x] Task: Test De Prado integration
+    - [x] Test via API endpoint
+    - [x] Test via webapp UI
+    - [x] Verify visualizations render correctly
+- [x] Task: Conductor - User Manual Verification 'Phase 3: De Prado Model Integration' (Protocol in workflow.md) (SHA: 3f2d2ba)
 
 ## Phase 4: Criscuolo-Waehlbroeck Model Integration
 - [ ] Task: Create Criscuolo-Waehlbroeck wrapper
