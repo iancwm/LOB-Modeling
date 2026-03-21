@@ -86,14 +86,14 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 5: Asset Option Model Integration' (Protocol in workflow.md) (SHA: 24dc2de)
 
 ## Phase 6: Testing and Polish
-- [~] Task: Write wrapper tests
-    - [~] Test Almgren-Chriss wrapper
-    - [ ] Test Glosten-Milgrom wrapper
-    - [ ] Test De Prado wrapper
-    - [ ] Test Criscuolo-Waehlbroeck wrapper
-    - [ ] Test Asset Option wrapper
-- [ ] Task: Integration testing
-    - [ ] Test model comparison with all models
+- [x] Task: Write wrapper tests
+    - [x] Test Almgren-Chriss wrapper (SHA: 0ea5f79)
+    - [x] Test Glosten-Milgrom wrapper (SHA: 4549539)
+    - [x] Test De Prado wrapper (SHA: 4549539)
+    - [x] Test Criscuolo-Waehlbroeck wrapper (SHA: 4549539)
+    - [x] Test Asset Option wrapper (SHA: 4549539)
+- [~] Task: Integration testing
+    - [~] Test model comparison with all models
     - [ ] Test parameter validation for all models
     - [ ] Test error handling for edge cases
 - [ ] Task: Documentation updates
