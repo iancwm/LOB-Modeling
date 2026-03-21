@@ -19,9 +19,10 @@ export default function ResultsChart() {
   }
 
   // Extract time series data for plotting
-  const timeData = results.time_series.time || []
+  const timeData = results.time_series.time || results.time_series.bucket || []
+  const xLabel = results.time_series.time ? 'Time' : 'Bucket'
   const traces = Object.entries(results.time_series)
-    .filter(([key]) => key !== 'time')
+    .filter(([key]) => key !== 'time' && key !== 'bucket')
     .map(([key, values]) => ({
       x: timeData,
       y: values,
@@ -42,7 +43,7 @@ export default function ResultsChart() {
             width: undefined,
             height: 400,
             title: 'Simulation Results',
-            xaxis: { title: 'Time Period' },
+            xaxis: { title: xLabel + ' Period' },
             yaxis: { title: 'Value' },
             showlegend: true,
             legend: { x: 0, y: 1 },
