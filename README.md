@@ -77,15 +77,39 @@ pip install -e ".[dev]"
 pip install -r requirements.txt
 ```
 
+### Using just (Recommended)
+
+The `just` command runner is the primary way to run development commands:
+
+```bash
+# Install all dependencies (including dev tools)
+just install
+
+# Run tests
+just test
+
+# Run lint checks
+just lint
+
+# Format code
+just format
+
+# Start development server
+just dev
+```
+
 ### Using Makefile (Legacy)
 
-The legacy Makefile is still available but deprecated:
+The legacy Makefile is still available for common commands:
 
 ```bash
 make install
 make test
 make lint
+make clean
 ```
+
+For the full list of commands, use `just --list`.
 
 ### Dependencies
 
@@ -135,13 +159,14 @@ jupyter notebook almgren_chriss_example.ipynb
 
 ### Command Line Usage
 
-You can run the models using the `Makefile` commands:
+You can run the models using `just` commands:
 
 ```bash
-make run-kyle
-make run-almgren
-make run-glosten
-make run-criscuolo
+just run-kyle
+just run-almgren
+just run-glosten
+just run-criscuolo
+just run-deprado
 ```
 
 ### Python API
@@ -346,42 +371,56 @@ This project follows Google Python style guidelines. All code includes Google-st
 
 ```bash
 # Run all lint checks
-make lint
+just lint
 
 # Format code
-make format
+just format
 
 # Check docstrings
-make check-docstrings
+just check-docstrings
+
+# Run type checking
+just typecheck
+
+# Run all quality checks
+just check
 ```
 
 ### Testing
 
-Run all tests with pytest:
+Run all tests with `just`:
 ```bash
-make test
+just test
 ```
 
 Run tests with coverage:
 ```bash
-pytest tests/ --cov=src/lob_modeling --cov-report=html
+just coverage
 ```
 
-Run specific test modules:
+Run specific test files:
 ```bash
 # Run only model tests
-pytest tests/test_models.py -v
+just test-file tests/test_models.py
 
 # Run only webapp tests
-pytest tests/webapp/ -v
+just test-file tests/webapp/
+
+# Using pytest directly
+uv run pytest tests/test_models.py -v
+uv run pytest tests/webapp/ -v
 ```
 
 ### Running Models
 
 ```bash
 # Run individual models
-make run-kyle
-make run-almgren
-make run-glosten
-make run-criscuolo
+just run-kyle
+just run-almgren
+just run-glosten
+just run-criscuolo
+just run-deprado
+
+# Run all models
+just run-all
 ```
