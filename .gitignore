@@ -4,3 +4,5 @@ src/lob_modeling/__pycache__
 *.pyc
 frontend/
 node_modules/
+src/lob_modeling/webapp/api/__pycache__
+src/lob_modeling/webapp/modules/wrappers/__pycache__
