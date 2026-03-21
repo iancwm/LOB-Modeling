@@ -24,19 +24,55 @@ This repository compiles a collection of fundamental market making models and ex
 
 ## Installation
 
-1.  Create a virtual environment:
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
-2.  Install dependencies:
-    ```bash
-    make install
-    ```
-    Or manually:
-    ```bash
-    pip install -r requirements.txt
-    ```
+### Quick Start (Recommended)
+
+Using [`uv`](https://github.com/astral-sh/uv) and [`just`](https://github.com/casey/just):
+
+```bash
+# Install uv (if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install just (if not already installed)
+# macOS: brew install just
+# Linux: cargo install just
+
+# Clone and setup
+git clone <repository-url>
+cd LOB-Modeling
+
+# Install all dependencies (including dev tools)
+just install
+
+# Run tests
+just test
+
+# Start development server
+just dev
+```
+
+### Traditional Method
+
+```bash
+# Create a virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install -e ".[dev]"
+
+# Or using requirements.txt
+pip install -r requirements.txt
+```
+
+### Using Makefile (Legacy)
+
+The legacy Makefile is still available but deprecated:
+
+```bash
+make install
+make test
+make lint
+```
 
 ### Dependencies
 
@@ -178,15 +214,60 @@ asyncio.run(stream_simulation())
 **Running Tests:**
 
 ```bash
-# Run all tests including webapp tests
-make test
+# Run all tests
+just test
 
-# Run only webapp tests
-pytest tests/webapp/ -v
+# Run tests with coverage
+just coverage
 
-# Run with coverage
-pytest tests/ --cov=src/lob_modeling/webapp --cov-report=html
+# Run specific test file
+just test-file tests/test_models.py
+
+# Using pytest directly
+uv run pytest tests/ -v
+uv run pytest tests/ --cov=src/lob_modeling --cov-report=html
 ```
+
+## Development Commands
+
+All development commands are available through `just`:
+
+```bash
+# Setup
+just install          # Install all dependencies
+just install-prod     # Install production dependencies only
+just update           # Update dependencies
+
+# Testing
+just test             # Run all tests
+just coverage         # Run tests with coverage report
+just test-file <file> # Run specific test file
+
+# Linting & Formatting
+just lint             # Run all lint checks
+just format           # Format code with black and isort
+just check-format     # Check formatting (no changes)
+just check-docstrings # Check docstring conventions
+just typecheck        # Run mypy type checker
+just check            # Run all quality checks
+
+# Running Models
+just run-kyle         # Run Kyle Model example
+just run-almgren      # Run Almgren-Chriss example
+just run-glosten      # Run Glosten-Milgrom example
+just run-criscuolo    # Run Criscuolo-Waehlbroeck example
+just run-deprado      # Run De Prado example
+just run-all          # Run all model examples
+
+# Webapp
+just dev              # Start development server (auto-reload)
+just serve            # Start production server
+
+# Cleanup
+just clean            # Remove build artifacts and cache
+```
+
+See all available commands: `just --list`
 
 ## Models
 
