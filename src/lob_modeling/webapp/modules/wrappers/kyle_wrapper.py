@@ -10,6 +10,8 @@ from typing import Any, Dict
 src_path = Path(__file__).parent.parent.parent.parent.parent
 sys.path.insert(0, str(src_path))
 
+# noqa: E402
+
 from lob_modeling.models.kyle import KyleModel as OriginalKyleModel  # noqa: E402
 
 from ..base import (  # noqa: E402
@@ -152,13 +154,29 @@ class KyleModelModule(ModelModule):
         time_series = {
             "time": list(range(N + 1)),
             "true_value": [V_0] * (N + 1),  # Simplified for now
-            "market_price": price_changes.tolist() if hasattr(price_changes, 'tolist') else list(price_changes),
-            "informed_order": informed_orders.tolist() if hasattr(informed_orders, 'tolist') else list(informed_orders),
-            "noise_order": noise_orders.tolist() if hasattr(noise_orders, 'tolist') else list(noise_orders),
+            "market_price": (
+                price_changes.tolist()
+                if hasattr(price_changes, "tolist")
+                else list(price_changes)
+            ),
+            "informed_order": (
+                informed_orders.tolist()
+                if hasattr(informed_orders, "tolist")
+                else list(informed_orders)
+            ),
+            "noise_order": (
+                noise_orders.tolist()
+                if hasattr(noise_orders, "tolist")
+                else list(noise_orders)
+            ),
         }
 
         metrics = {
-            "final_price": float(time_series["market_price"][-1]) if len(time_series["market_price"]) > 0 else 0.0,
+            "final_price": (
+                float(time_series["market_price"][-1])
+                if len(time_series["market_price"]) > 0
+                else 0.0
+            ),
             "price_variance": float(sum(sigma) / len(sigma)) if len(sigma) > 0 else 0.0,
         }
 

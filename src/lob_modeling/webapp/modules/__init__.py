@@ -8,14 +8,14 @@ from .base import (
     VisualizationSpec,
 )
 from .registry import get_module, list_modules, register_module, registry
+from .wrappers.almgren_chriss_wrapper import AlmgrenChrissModule
+from .wrappers.asset_option_wrapper import AssetOptionModule
+from .wrappers.criscuolo_waehlbroeck_wrapper import CriscuoloWaehlbroeckModule
+from .wrappers.de_prado_wrapper import DePradoModule
+from .wrappers.glosten_milgrom_wrapper import GlostenMilgromModule
 
 # Register available model modules
 from .wrappers.kyle_wrapper import KyleModelModule
-from .wrappers.almgren_chriss_wrapper import AlmgrenChrissModule
-from .wrappers.glosten_milgrom_wrapper import GlostenMilgromModule
-from .wrappers.de_prado_wrapper import DePradoModule
-from .wrappers.criscuolo_waehlbroeck_wrapper import CriscuoloWaehlbroeckModule
-from .wrappers.asset_option_wrapper import AssetOptionModule
 
 register_module("kyle", KyleModelModule)
 register_module("almgren_chriss", AlmgrenChrissModule)

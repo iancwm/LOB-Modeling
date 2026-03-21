@@ -4,14 +4,14 @@ from typing import Any, Dict, List
 
 import pytest
 
-from src.lob_modeling.webapp.modules.base import (
+from lob_modeling.webapp.modules.base import (
     EducationalContent,
     ModelModule,
     ParameterSpec,
     SimulationResult,
     VisualizationSpec,
 )
-from src.lob_modeling.webapp.modules.registry import (
+from lob_modeling.webapp.modules.registry import (
     ModuleRegistry,
     get_module,
     list_modules,

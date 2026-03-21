@@ -13,9 +13,9 @@ import numpy as np
 src_path = Path(__file__).parent.parent.parent.parent / "src"
 sys.path.insert(0, str(src_path))
 
-from lob_modeling.models.criscuolo_waehlbroeck import Criscuolo2014
+from lob_modeling.models.criscuolo_waehlbroeck import Criscuolo2014  # noqa: E402
 
-from ..base import (
+from ..base import (  # noqa: E402
     EducationalContent,
     ModelModule,
     ParameterSpec,
@@ -168,20 +168,23 @@ class CriscuoloWaehlbroeckModule(ModelModule):
         # Run optimization
         try:
             opt_result = model.optimal_execution()
-            
+
             # Extract optimal trajectory
             trades = np.reshape(opt_result.x, (N, 2))
             share_turnover = [trade[0] for trade in trades]
             participation = [trade[1] for trade in trades]
-            
+
             # Simulate volatility path (simplified Heston-like)
             np.random.seed(42)
             dt = T / N
             volatility = [V_0]
             for i in range(1, N):
-                dvol = KAPPA * (THETA - volatility[-1]) * dt + GAMMA * np.sqrt(dt) * np.random.normal()
+                dvol = (
+                    KAPPA * (THETA - volatility[-1]) * dt
+                    + GAMMA * np.sqrt(dt) * np.random.normal()
+                )
                 volatility.append(max(0.01, volatility[-1] + dvol))
-            
+
         except Exception as e:
             # Fallback if optimization fails
             share_turnover = [1.0 / N] * N
@@ -199,12 +202,14 @@ class CriscuoloWaehlbroeckModule(ModelModule):
 
         # Calculate metrics
         avg_volatility = sum(volatility[:N]) / len(volatility[:N]) if volatility else 0
-        total_cost = opt_result.fun if 'opt_result' in dir() else 0
-        
+        total_cost = opt_result.fun if "opt_result" in dir() else 0
+
         metrics = {
             "avg_volatility": float(avg_volatility),
             "total_cost": float(total_cost) if total_cost else 0,
-            "optimal_participation": float(sum(participation) / len(participation)) if participation else 0,
+            "optimal_participation": (
+                float(sum(participation) / len(participation)) if participation else 0
+            ),
             "execution_time_years": float(T),
         }
 

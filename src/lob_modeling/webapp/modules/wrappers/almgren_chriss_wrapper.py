@@ -8,9 +8,9 @@ from typing import Any, Dict, List
 src_path = Path(__file__).parent.parent.parent.parent / "src"
 sys.path.insert(0, str(src_path))
 
-from lob_modeling.models.almgren_chriss import AlmgrenChriss2000
+from lob_modeling.models.almgren_chriss import AlmgrenChriss2000  # noqa: E402
 
-from ..base import (
+from ..base import (  # noqa: E402
     EducationalContent,
     ModelModule,
     ParameterSpec,
@@ -171,8 +171,8 @@ class AlmgrenChrissModule(ModelModule):
         )
 
         # Run optimization (quadratic programming approach)
-        opt_sale, inventory, expected_shortfall, variance_shortfall = model.basic_almgren(
-            plot=False
+        opt_sale, inventory, expected_shortfall, variance_shortfall = (
+            model.basic_almgren(plot=False)
         )
 
         # Convert to SimulationResult format
@@ -187,7 +187,9 @@ class AlmgrenChrissModule(ModelModule):
             "expected_shortfall": float(expected_shortfall),
             "variance_shortfall": float(variance_shortfall),
             "total_traded": float(sum(opt_sale)),
-            "avg_trade_size": float(sum(opt_sale) / len(opt_sale)) if len(opt_sale) > 0 else 0,
+            "avg_trade_size": (
+                float(sum(opt_sale) / len(opt_sale)) if len(opt_sale) > 0 else 0
+            ),
         }
 
         return SimulationResult(

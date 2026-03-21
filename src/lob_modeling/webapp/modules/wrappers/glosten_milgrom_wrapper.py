@@ -8,9 +8,9 @@ from typing import Any, Dict, List
 src_path = Path(__file__).parent.parent.parent.parent / "src"
 sys.path.insert(0, str(src_path))
 
-from lob_modeling.models.glosten_milgrom import GlostenAndMilgromSimplest
+from lob_modeling.models.glosten_milgrom import GlostenAndMilgromSimplest  # noqa: E402
 
-from ..base import (
+from ..base import (  # noqa: E402
     EducationalContent,
     ModelModule,
     ParameterSpec,
@@ -143,7 +143,7 @@ class GlostenMilgromModule(ModelModule):
         # Convert to SimulationResult format
         time_steps = list(range(len(model.bid)))
         spread = [model.ask[i] - model.bid[i] for i in range(len(model.bid))]
-        
+
         time_series = {
             "time": time_steps,
             "bid": model.bid,
@@ -155,7 +155,7 @@ class GlostenMilgromModule(ModelModule):
         avg_spread = sum(spread) / len(spread) if spread else 0
         final_bid = model.bid[-1] if model.bid else 0
         final_ask = model.ask[-1] if model.ask else 0
-        
+
         metrics = {
             "avg_spread": float(avg_spread),
             "final_bid": float(final_bid),

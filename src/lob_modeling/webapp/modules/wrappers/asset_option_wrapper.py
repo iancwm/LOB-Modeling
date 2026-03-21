@@ -8,9 +8,9 @@ from typing import Any, Dict, List
 src_path = Path(__file__).parent.parent.parent.parent / "src"
 sys.path.insert(0, str(src_path))
 
-from lob_modeling.models.asset_option import asset_or_nothing_call
+from lob_modeling.models.asset_option import asset_or_nothing_call  # noqa: E402
 
-from ..base import (
+from ..base import (  # noqa: E402
     EducationalContent,
     ModelModule,
     ParameterSpec,
@@ -163,12 +163,13 @@ class AssetOptionModule(ModelModule):
 
         # Extract option values at each time step (initial node)
         option_values = [option_tree[0, i] for i in range(n + 1)]
-        
+
         # Generate asset price paths (simplified - show expected path)
         import numpy as np
+
         dt = T / n
         time_steps = list(range(n + 1))
-        
+
         # Calculate expected asset price at each step (risk-neutral)
         asset_prices = [s * np.exp((r - 0.5 * SIGMA**2) * dt * i) for i in time_steps]
 
@@ -182,8 +183,12 @@ class AssetOptionModule(ModelModule):
         # Calculate metrics
         initial_option_value = option_tree[0, 0]
         intrinsic_value = max(s - K, 0)
-        time_value = initial_option_value - intrinsic_value if initial_option_value > intrinsic_value else 0
-        
+        time_value = (
+            initial_option_value - intrinsic_value
+            if initial_option_value > intrinsic_value
+            else 0
+        )
+
         metrics = {
             "option_price": float(initial_option_value),
             "intrinsic_value": float(intrinsic_value),

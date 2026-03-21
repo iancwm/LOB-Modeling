@@ -14,7 +14,7 @@ import numpy as np
 src_path = Path(__file__).parent.parent.parent.parent / "src"
 sys.path.insert(0, str(src_path))
 
-from ..base import (
+from ..base import (  # noqa: E402
     EducationalContent,
     ModelModule,
     ParameterSpec,
@@ -146,42 +146,42 @@ class DePradoModule(ModelModule):
 
         # Simulate order flow
         np.random.seed(42)  # For reproducibility
-        
+
         # Generate synthetic trade data
         trades = np.random.choice([-1, 1], size=n_trades, p=[0.5, 0.5])
         volumes = np.random.exponential(scale=100, size=n_trades)
-        
+
         # Adjust for informed trading
         informed_mask = np.random.random(n_trades) < (alpha * mu)
         trades[informed_mask] = np.random.choice([-1, 1], size=sum(informed_mask))
-        
+
         # Calculate VPIN-like metric for each bucket
         bucket_size = n_trades // n_buckets
         vpin_values = []
         buy_volumes = []
         sell_volumes = []
-        
+
         for i in range(n_buckets):
             start_idx = i * bucket_size
             end_idx = start_idx + bucket_size
-            
+
             bucket_trades = trades[start_idx:end_idx]
             bucket_volumes = volumes[start_idx:end_idx]
-            
+
             buy_vol = sum(bucket_volumes[bucket_trades == 1])
             sell_vol = sum(bucket_volumes[bucket_trades == -1])
-            
+
             # VPIN = |Buy - Sell| / (Buy + Sell)
             total_vol = buy_vol + sell_vol
             if total_vol > 0:
                 vpin = abs(buy_vol - sell_vol) / total_vol
             else:
                 vpin = 0
-            
+
             vpin_values.append(vpin)
             buy_volumes.append(buy_vol)
             sell_volumes.append(sell_vol)
-        
+
         # Convert to SimulationResult format
         bucket_ids = list(range(1, n_buckets + 1))
         time_series = {
@@ -196,13 +196,17 @@ class DePradoModule(ModelModule):
         max_vpin = max(vpin_values) if vpin_values else 0
         total_buy = sum(buy_volumes)
         total_sell = sum(sell_volumes)
-        
+
         metrics = {
             "avg_vpin": float(avg_vpin),
             "max_vpin": float(max_vpin),
             "total_buy_volume": float(total_buy),
             "total_sell_volume": float(total_sell),
-            "order_imbalance": float(abs(total_buy - total_sell) / (total_buy + total_sell)) if (total_buy + total_sell) > 0 else 0,
+            "order_imbalance": (
+                float(abs(total_buy - total_sell) / (total_buy + total_sell))
+                if (total_buy + total_sell) > 0
+                else 0
+            ),
             "informed_trading_estimate": float(alpha * mu),
         }
 

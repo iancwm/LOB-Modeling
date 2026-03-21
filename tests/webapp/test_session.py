@@ -6,8 +6,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from src.lob_modeling.webapp.session.manager import WebSocketManager
-from src.lob_modeling.webapp.session.store import InMemorySessionStore, SessionData
+from lob_modeling.webapp.session.manager import WebSocketManager
+from lob_modeling.webapp.session.store import InMemorySessionStore, SessionData
 
 
 class TestSessionData:

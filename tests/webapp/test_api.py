@@ -5,15 +5,15 @@ from unittest.mock import MagicMock, patch
 import pytest
 from fastapi.testclient import TestClient
 
-from src.lob_modeling.webapp.main import create_app
-from src.lob_modeling.webapp.modules.base import (
+from lob_modeling.webapp.main import create_app
+from lob_modeling.webapp.modules.base import (
     EducationalContent,
     ModelModule,
     ParameterSpec,
     SimulationResult,
     VisualizationSpec,
 )
-from src.lob_modeling.webapp.modules.registry import registry
+from lob_modeling.webapp.modules.registry import registry
 
 
 @pytest.fixture

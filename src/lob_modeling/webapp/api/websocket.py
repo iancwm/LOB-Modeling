@@ -76,7 +76,7 @@ async def run_simulation_stream(
 
     try:
         module = get_module(model_id)
-        
+
         # Send progress start
         await ws_manager.send_to_session(
             session_id,

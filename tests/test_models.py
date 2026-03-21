@@ -1,7 +1,7 @@
 import unittest
 
-from src.lob_modeling.models.almgren_chriss import AlmgrenChriss2000
-from src.lob_modeling.models.kyle import KyleModel
+from lob_modeling.models.almgren_chriss import AlmgrenChriss2000
+from lob_modeling.models.kyle import KyleModel
 
 
 class TestModels(unittest.TestCase):

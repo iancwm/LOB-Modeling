@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Integrate All Models into Webapp**
+- [~] **Track: Integrate All Models into Webapp**
   *Link: [./tracks/model_integration_20260320/](./tracks/model_integration_20260320/)*
