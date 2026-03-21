@@ -17,22 +17,22 @@
     - [x] Verify visualizations render correctly
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Almgren-Chriss Model Integration' (Protocol in workflow.md) (SHA: 4832c7a)
 
-## Phase 2: Glosten-Milgrom Model Integration
-- [ ] Task: Create Glosten-Milgrom wrapper
-    - [ ] Create `modules/wrappers/glosten_milgrom_wrapper.py`
-    - [ ] Implement model_id, display_name, description
-    - [ ] Define parameters (initial_prob, up_factor, down_factor)
-    - [ ] Implement simulate() method
-    - [ ] Define visualizations (bid-ask spread evolution)
-    - [ ] Add educational content
-- [ ] Task: Register Glosten-Milgrom module
-    - [ ] Import in `modules/__init__.py`
-    - [ ] Register with registry
-- [ ] Task: Test Glosten-Milgrom integration
-    - [ ] Test via API endpoint
-    - [ ] Test via webapp UI
-    - [ ] Verify visualizations render correctly
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Glosten-Milgrom Model Integration' (Protocol in workflow.md)
+## Phase 2: Glosten-Milgrom Model Integration [checkpoint: 7f1908f]
+- [x] Task: Create Glosten-Milgrom wrapper
+    - [x] Create `modules/wrappers/glosten_milgrom_wrapper.py`
+    - [x] Implement model_id, display_name, description
+    - [x] Define parameters (initial_prob, up_factor, down_factor)
+    - [x] Implement simulate() method
+    - [x] Define visualizations (bid-ask spread evolution)
+    - [x] Add educational content
+- [x] Task: Register Glosten-Milgrom module
+    - [x] Import in `modules/__init__.py`
+    - [x] Register with registry
+- [x] Task: Test Glosten-Milgrom integration
+    - [x] Test via API endpoint
+    - [x] Test via webapp UI
+    - [x] Verify visualizations render correctly
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Glosten-Milgrom Model Integration' (Protocol in workflow.md) (SHA: 7f1908f)
 
 ## Phase 3: De Prado Model Integration
 - [ ] Task: Create De Prado wrapper
